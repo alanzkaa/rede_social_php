@@ -52,4 +52,23 @@ function buscarUsuarioPorEmail(string $email): ?array
  
     return $usuario ?: null;
 }
+
+/**
+ * Busca um usuário pelo ID. Retorna o array com os dados do usuário,
+ * ou null se não encontrar (ex: ID inválido).
+ */
+function buscarUsuarioPorId(int $id): ?array
+{
+    $pdo = conectar();
+ 
+    $sql = "SELECT id, nome_completo, email, nome_usuario, data_nascimento, data_cadastro
+            FROM usuarios WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+ 
+    $usuario = $stmt->fetch();
+ 
+    return $usuario ?: null;
+}
  
