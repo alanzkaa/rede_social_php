@@ -34,3 +34,22 @@ function cadastrarUsuario(string $nomeCompleto, string $email, string $senha, ?s
 
     return $stmt->execute();
 }
+
+/**
+ * Busca um usuário pelo e-mail. Retorna o array com os dados do usuário,
+ * ou null se não encontrar ninguém com esse e-mail.
+ */
+function buscarUsuarioPorEmail(string $email): ?array
+{
+    $pdo = conectar();
+ 
+    $sql = "SELECT id, nome_completo, email, senha, nome_usuario FROM usuarios WHERE email = :email";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':email', $email);
+    $stmt->execute();
+ 
+    $usuario = $stmt->fetch();
+ 
+    return $usuario ?: null;
+}
+ 
