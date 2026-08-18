@@ -35,6 +35,8 @@ $usuario = buscarUsuarioPorId($_SESSION['usuario_id']);
         <?= date('d/m/Y', strtotime($usuario['data_cadastro'])) ?>
     </p>
 
+    <a href="perfil_editar.php">Editar perfil</a>
+    |
     <a href="feed.php">Voltar ao feed</a>
 
 </body>

@@ -71,4 +71,39 @@ function buscarUsuarioPorId(int $id): ?array
  
     return $usuario ?: null;
 }
+
+/**
+ * Atualiza os dados de perfil de um usuário.
+ * Retorna true em caso de sucesso, ou uma string com mensagem de erro.
+ */
+function atualizarPerfil(int $id, string $nomeCompleto, ?string $nomeUsuario, ?string $dataNascimento): bool|string
+{
+    $pdo = conectar();
  
+    // Se um nome de usuário foi informado, confere se outro usuário já não está usando.
+    if ($nomeUsuario !== null) {
+        $sql = "SELECT id FROM usuarios WHERE nome_usuario = :nome_usuario AND id != :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':nome_usuario', $nomeUsuario);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+ 
+        if ($stmt->fetch()) {
+            return 'Este nome de usuário já está em uso.';
+        }
+    }
+ 
+    $sql = "UPDATE usuarios
+            SET nome_completo = :nome_completo,
+                nome_usuario = :nome_usuario,
+                data_nascimento = :data_nascimento
+            WHERE id = :id";
+ 
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':nome_completo', $nomeCompleto);
+    $stmt->bindValue(':nome_usuario', $nomeUsuario);
+    $stmt->bindValue(':data_nascimento', $dataNascimento);
+    $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+ 
+    return $stmt->execute();
+}
