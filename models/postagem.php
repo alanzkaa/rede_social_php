@@ -53,3 +53,24 @@ function listarFeed(int $usuarioId): array
 
     return $stmt->fetchAll();
 }
+
+/**
+ * Lista as postagens de um único usuário específico (para exibir no perfil dele),
+ * das mais recentes para as mais antigas.
+ */
+function listarPostagensDoUsuario(int $usuarioId): array
+{
+    $pdo = conectar();
+
+    $sql = "SELECT p.id, p.conteudo, p.data_criacao, u.id AS autor_id, u.nome_completo, u.nome_usuario, u.foto_perfil
+            FROM postagens p
+            JOIN usuarios u ON u.id = p.usuario_id
+            WHERE p.usuario_id = :usuario_id
+            ORDER BY p.data_criacao DESC";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':usuario_id', $usuarioId, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->fetchAll();
+}

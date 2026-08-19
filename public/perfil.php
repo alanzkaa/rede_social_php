@@ -3,6 +3,9 @@ session_start();
 
 require_once __DIR__ . '/../models/usuario.php';
 require_once __DIR__ . '/../models/amizade.php';
+require_once __DIR__ . '/../models/postagem.php';
+require_once __DIR__ . '/../models/curtida.php';
+require_once __DIR__ . '/../models/comentario.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/funcoes.php';
 
@@ -24,23 +27,31 @@ if (!$usuario) {
 
 $mensagem = null;
 
-// Ação de enviar solicitação direto pela página de perfil.
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$ehProprioPerfil) {
+// Ações vindas de formulários (amizade, curtir, comentar).
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $acao = $_POST['acao'] ?? '';
 
-    if ($acao === 'enviar') {
+    if ($acao === 'enviar' && !$ehProprioPerfil) {
         $resultado = enviarSolicitacao($usuarioLogadoId, $idVisualizado);
         $mensagem = $resultado === true ? 'Solicitação enviada!' : $resultado;
-    } elseif ($acao === 'aceitar') {
+    } elseif ($acao === 'aceitar' && !$ehProprioPerfil) {
         $solicitacaoId = (int) ($_POST['solicitacao_id'] ?? 0);
         aceitarSolicitacao($solicitacaoId, $usuarioLogadoId);
-    } elseif ($acao === 'recusar') {
+    } elseif ($acao === 'recusar' && !$ehProprioPerfil) {
         $solicitacaoId = (int) ($_POST['solicitacao_id'] ?? 0);
         recusarSolicitacao($solicitacaoId, $usuarioLogadoId);
+    } elseif ($acao === 'curtir') {
+        $postagemId = (int) ($_POST['postagem_id'] ?? 0);
+        alternarCurtida($usuarioLogadoId, $postagemId);
+    } elseif ($acao === 'comentar') {
+        $postagemId = (int) ($_POST['postagem_id'] ?? 0);
+        $conteudoComentario = $_POST['conteudo_comentario'] ?? '';
+        criarComentario($postagemId, $usuarioLogadoId, $conteudoComentario);
     }
 }
 
 $statusAmizade = $ehProprioPerfil ? null : verificarStatusAmizade($usuarioLogadoId, $idVisualizado);
+$posts = listarPostagensDoUsuario($idVisualizado);
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -110,6 +121,48 @@ $statusAmizade = $ehProprioPerfil ? null : verificarStatusAmizade($usuarioLogado
         <br><br>
         <a href="feed.php">Voltar ao feed</a>
 
+    <?php endif; ?>
+
+    <hr>
+
+    <h2><?= $ehProprioPerfil ? 'Minhas postagens' : 'Postagens' ?></h2>
+
+    <?php if (empty($posts)): ?>
+        <p>Nenhuma postagem ainda.</p>
+    <?php else: ?>
+        <?php foreach ($posts as $post): ?>
+            <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+                <small><?= date('d/m/Y H:i', strtotime($post['data_criacao'])) ?></small>
+                <p><?= nl2br(htmlspecialchars($post['conteudo'])) ?></p>
+
+                <?php $jaCurtiu = usuarioCurtiu($usuarioLogadoId, $post['id']); ?>
+                <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" style="display:inline;">
+                    <input type="hidden" name="acao" value="curtir">
+                    <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
+                    <button type="submit"><?= $jaCurtiu ? 'Descurtir' : 'Curtir' ?></button>
+                </form>
+                <?= contarCurtidas($post['id']) ?> curtida(s)
+
+                <div style="margin-left:20px; margin-top:10px;">
+                    <?php foreach (listarComentarios($post['id']) as $comentario): ?>
+                        <p>
+                            <?= htmlFotoPerfil($comentario['foto_perfil'], 24) ?>
+                            <a href="perfil.php?id=<?= (int) $comentario['autor_id'] ?>"><strong><?= htmlspecialchars($comentario['nome_completo']) ?>:</strong></a>
+                            <?= htmlspecialchars($comentario['conteudo']) ?>
+                            <br>
+                            <small><?= date('d/m/Y H:i', strtotime($comentario['data_criacao'])) ?></small>
+                        </p>
+                    <?php endforeach; ?>
+
+                    <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>">
+                        <input type="hidden" name="acao" value="comentar">
+                        <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
+                        <input type="text" name="conteudo_comentario" placeholder="Escreva um comentário..." size="40">
+                        <button type="submit">Comentar</button>
+                    </form>
+                </div>
+            </div>
+        <?php endforeach; ?>
     <?php endif; ?>
 
 </body>
