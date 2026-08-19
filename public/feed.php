@@ -79,7 +79,7 @@ $usuarioLogado = buscarUsuarioPorId($usuarioId);
         <?php foreach ($posts as $post): ?>
             <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
                 <?= htmlFotoPerfil($post['foto_perfil']) ?>
-                <strong><?= htmlspecialchars($post['nome_completo']) ?></strong>
+                <a href="perfil.php?id=<?= (int) $post['autor_id'] ?>"><strong><?= htmlspecialchars($post['nome_completo']) ?></strong></a>
                 <?php if ($post['nome_usuario']): ?>
                     (@<?= htmlspecialchars($post['nome_usuario']) ?>)
                 <?php endif; ?>
@@ -99,7 +99,7 @@ $usuarioLogado = buscarUsuarioPorId($usuarioId);
                     <?php foreach (listarComentarios($post['id']) as $comentario): ?>
                         <p>
                             <?= htmlFotoPerfil($comentario['foto_perfil'], 24) ?>
-                            <strong><?= htmlspecialchars($comentario['nome_completo']) ?>:</strong>
+                            <a href="perfil.php?id=<?= (int) $comentario['autor_id'] ?>"><strong><?= htmlspecialchars($comentario['nome_completo']) ?>:</strong></a>
                             <?= htmlspecialchars($comentario['conteudo']) ?>
                             <br>
                             <small><?= date('d/m/Y H:i', strtotime($comentario['data_criacao'])) ?></small>

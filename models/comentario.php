@@ -27,13 +27,14 @@ function criarComentario(int $postagemId, int $usuarioId, string $conteudo): boo
 }
 
 /**
- * Lista os comentários de uma postagem, do mais antigo para o mais novo.
+ * Lista os comentários de uma postagem, do mais antigo para o mais novo
+ * (ordem de leitura natural de uma conversa).
  */
 function listarComentarios(int $postagemId): array
 {
     $pdo = conectar();
 
-    $sql = "SELECT c.id, c.conteudo, c.data_criacao, u.nome_completo, u.nome_usuario, u.foto_perfil
+    $sql = "SELECT c.id, c.conteudo, c.data_criacao, u.id AS autor_id, u.nome_completo, u.nome_usuario, u.foto_perfil
             FROM comentarios c
             JOIN usuarios u ON u.id = c.usuario_id
             WHERE c.postagem_id = :postagem_id

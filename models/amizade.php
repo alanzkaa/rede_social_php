@@ -91,7 +91,7 @@ function listarAmigos(int $usuarioId): array
 {
     $pdo = conectar();
 
-    $sql = "SELECT u.id, u.nome_completo, u.nome_usuario
+    $sql = "SELECT u.id, u.nome_completo, u.nome_usuario, u.foto_perfil
             FROM amizades a
             JOIN usuarios u ON u.id = IF(a.usuario_id = :usuario_id, a.amigo_id, a.usuario_id)
             WHERE (a.usuario_id = :usuario_id2 OR a.amigo_id = :usuario_id3)
@@ -125,4 +125,43 @@ function listarSolicitacoesPendentes(int $usuarioId): array
     $stmt->execute();
 
     return $stmt->fetchAll();
+}
+
+/**
+ * Verifica o status de amizade entre dois usuários.
+ * Retorna: 'nenhuma', 'pendente_enviada' (eu enviei, aguardando),
+ * 'pendente_recebida' (o outro me enviou, aguardando eu aceitar), ou 'amigos'.
+ * Também devolve o id da solicitação, útil para montar botões de aceitar/recusar.
+ */
+function verificarStatusAmizade(int $usuarioId, int $outroId): array
+{
+    $pdo = conectar();
+
+    $sql = "SELECT id, usuario_id, status FROM amizades
+            WHERE (usuario_id = :usuario_id AND amigo_id = :outro_id)
+               OR (usuario_id = :outro_id2 AND amigo_id = :usuario_id2)";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':usuario_id', $usuarioId, PDO::PARAM_INT);
+    $stmt->bindValue(':outro_id', $outroId, PDO::PARAM_INT);
+    $stmt->bindValue(':outro_id2', $outroId, PDO::PARAM_INT);
+    $stmt->bindValue(':usuario_id2', $usuarioId, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $relacao = $stmt->fetch();
+
+    if (!$relacao) {
+        return ['status' => 'nenhuma', 'solicitacao_id' => null];
+    }
+
+    if ($relacao['status'] === 'aceita') {
+        return ['status' => 'amigos', 'solicitacao_id' => $relacao['id']];
+    }
+
+    // Pendente: precisamos saber quem enviou, pra diferenciar os dois lados.
+    if ((int) $relacao['usuario_id'] === $usuarioId) {
+        return ['status' => 'pendente_enviada', 'solicitacao_id' => $relacao['id']];
+    }
+
+    return ['status' => 'pendente_recebida', 'solicitacao_id' => $relacao['id']];
 }

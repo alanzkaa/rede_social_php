@@ -117,7 +117,7 @@ $amigos = listarAmigos($usuarioId);
         <ul>
             <?php foreach ($amigos as $amigo): ?>
                 <li>
-                    <?= htmlspecialchars($amigo['nome_completo']) ?>
+                    <a href="perfil.php?id=<?= (int) $amigo['id'] ?>"><?= htmlspecialchars($amigo['nome_completo']) ?></a>
                     <?php if ($amigo['nome_usuario']): ?>
                         (@<?= htmlspecialchars($amigo['nome_usuario']) ?>)
                     <?php endif; ?>
