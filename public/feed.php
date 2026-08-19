@@ -3,6 +3,7 @@ session_start();
 
 require_once __DIR__ . '/../models/postagem.php';
 require_once __DIR__ . '/../models/curtida.php';
+require_once __DIR__ . '/../models/comentario.php';
 require_once __DIR__ . '/../includes/auth.php';
 
 exigirLogin();
@@ -16,6 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($acao === 'curtir') {
         $postagemId = (int) ($_POST['postagem_id'] ?? 0);
         alternarCurtida($usuarioId, $postagemId);
+    } elseif ($acao === 'comentar') {
+        $postagemId = (int) ($_POST['postagem_id'] ?? 0);
+        $conteudoComentario = $_POST['conteudo_comentario'] ?? '';
+        criarComentario($postagemId, $usuarioId, $conteudoComentario);
     } else {
         $conteudo = $_POST['conteudo'] ?? '';
         $resultado = criarPostagem($usuarioId, $conteudo);
@@ -81,9 +86,27 @@ $posts = listarFeed($usuarioId);
                 <form method="POST" action="feed.php" style="display:inline;">
                     <input type="hidden" name="acao" value="curtir">
                     <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
-                    <button type="submit"><?= $jaCurtiu ? 'Descurtir' : 'Curtir' ?></button>
+                    <button type="submit"><?= $jaCurtiu ? ' Descurtir' : ' Curtir' ?></button>
                 </form>
                 <?= contarCurtidas($post['id']) ?> curtida(s)
+
+                <div style="margin-left:20px; margin-top:10px;">
+                    <?php foreach (listarComentarios($post['id']) as $comentario): ?>
+                        <p>
+                            <strong><?= htmlspecialchars($comentario['nome_completo']) ?>:</strong>
+                            <?= htmlspecialchars($comentario['conteudo']) ?>
+                            <br>
+                            <small><?= date('d/m/Y H:i', strtotime($comentario['data_criacao'])) ?></small>
+                        </p>
+                    <?php endforeach; ?>
+
+                    <form method="POST" action="feed.php">
+                        <input type="hidden" name="acao" value="comentar">
+                        <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
+                        <input type="text" name="conteudo_comentario" placeholder="Escreva um comentário..." size="40">
+                        <button type="submit">Comentar</button>
+                    </form>
+                </div>
             </div>
         <?php endforeach; ?>
     <?php endif; ?>
