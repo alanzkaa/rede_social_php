@@ -19,7 +19,7 @@ function cadastrarUsuario(string $nomeCompleto, string $email, string $senha, ?s
         return 'Este e-mail já está cadastrado.';
     }
 
-    // Gera o hash da senha
+    // Gera o hash da senha — nunca salvamos a senha em texto puro.
     $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
 
     $sql = "INSERT INTO usuarios (nome_completo, email, senha, nome_usuario, data_nascimento)
@@ -42,14 +42,14 @@ function cadastrarUsuario(string $nomeCompleto, string $email, string $senha, ?s
 function buscarUsuarioPorEmail(string $email): ?array
 {
     $pdo = conectar();
- 
+
     $sql = "SELECT id, nome_completo, email, senha, nome_usuario FROM usuarios WHERE email = :email";
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':email', $email);
     $stmt->execute();
- 
+
     $usuario = $stmt->fetch();
- 
+
     return $usuario ?: null;
 }
 
@@ -60,15 +60,15 @@ function buscarUsuarioPorEmail(string $email): ?array
 function buscarUsuarioPorId(int $id): ?array
 {
     $pdo = conectar();
- 
+
     $sql = "SELECT id, nome_completo, email, nome_usuario, data_nascimento, data_cadastro
             FROM usuarios WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
- 
+
     $usuario = $stmt->fetch();
- 
+
     return $usuario ?: null;
 }
 
@@ -79,7 +79,7 @@ function buscarUsuarioPorId(int $id): ?array
 function atualizarPerfil(int $id, string $nomeCompleto, ?string $nomeUsuario, ?string $dataNascimento): bool|string
 {
     $pdo = conectar();
- 
+
     // Se um nome de usuário foi informado, confere se outro usuário já não está usando.
     if ($nomeUsuario !== null) {
         $sql = "SELECT id FROM usuarios WHERE nome_usuario = :nome_usuario AND id != :id";
@@ -87,23 +87,47 @@ function atualizarPerfil(int $id, string $nomeCompleto, ?string $nomeUsuario, ?s
         $stmt->bindValue(':nome_usuario', $nomeUsuario);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
- 
+
         if ($stmt->fetch()) {
             return 'Este nome de usuário já está em uso.';
         }
     }
- 
+
     $sql = "UPDATE usuarios
             SET nome_completo = :nome_completo,
                 nome_usuario = :nome_usuario,
                 data_nascimento = :data_nascimento
             WHERE id = :id";
- 
+
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':nome_completo', $nomeCompleto);
     $stmt->bindValue(':nome_usuario', $nomeUsuario);
     $stmt->bindValue(':data_nascimento', $dataNascimento);
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);
- 
+
     return $stmt->execute();
+}
+
+/**
+ * Busca usuários pelo nome ou nome de usuário (para adicionar como amigo).
+ * Exclui o próprio usuário logado do resultado.
+ */
+function buscarUsuarios(string $termo, int $idExcluido): array
+{
+    $pdo = conectar();
+
+    $sql = "SELECT id, nome_completo, nome_usuario
+            FROM usuarios
+            WHERE (nome_completo LIKE :termo OR nome_usuario LIKE :termo2)
+              AND id != :id_excluido
+            ORDER BY nome_completo
+            LIMIT 20";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':termo', '%' . $termo . '%');
+    $stmt->bindValue(':termo2', '%' . $termo . '%');
+    $stmt->bindValue(':id_excluido', $idExcluido, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->fetchAll();
 }

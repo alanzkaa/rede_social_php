@@ -18,7 +18,13 @@ exigirLogin();
 
     <p>(Feed provisório)</p>
 
-    <a href="logout.php">Sair</a>
+    <nav>
+        <a href="perfil.php">Meu perfil</a>
+        |
+        <a href="amigos.php">Amigos</a>
+        |
+        <a href="logout.php">Sair</a>
+    </nav>
 
 </body>
 </html>
