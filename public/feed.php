@@ -5,6 +5,8 @@ require_once __DIR__ . '/../models/postagem.php';
 require_once __DIR__ . '/../models/curtida.php';
 require_once __DIR__ . '/../models/comentario.php';
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/funcoes.php';
+require_once __DIR__ . '/../models/usuario.php';
 
 exigirLogin();
 
@@ -32,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $posts = listarFeed($usuarioId);
+$usuarioLogado = buscarUsuarioPorId($usuarioId);
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -61,6 +64,7 @@ $posts = listarFeed($usuarioId);
 
     <form method="POST" action="feed.php">
         <input type="hidden" name="acao" value="postar">
+        <?= htmlFotoPerfil($usuarioLogado['foto_perfil']) ?>
         <textarea name="conteudo" rows="3" cols="50" placeholder="No que você está pensando?"></textarea><br>
         <button type="submit">Postar</button>
     </form>
@@ -74,6 +78,7 @@ $posts = listarFeed($usuarioId);
     <?php else: ?>
         <?php foreach ($posts as $post): ?>
             <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+                <?= htmlFotoPerfil($post['foto_perfil']) ?>
                 <strong><?= htmlspecialchars($post['nome_completo']) ?></strong>
                 <?php if ($post['nome_usuario']): ?>
                     (@<?= htmlspecialchars($post['nome_usuario']) ?>)
@@ -86,13 +91,14 @@ $posts = listarFeed($usuarioId);
                 <form method="POST" action="feed.php" style="display:inline;">
                     <input type="hidden" name="acao" value="curtir">
                     <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
-                    <button type="submit"><?= $jaCurtiu ? ' Descurtir' : ' Curtir' ?></button>
+                    <button type="submit"><?= $jaCurtiu ? 'Descurtir' : 'Curtir' ?></button>
                 </form>
                 <?= contarCurtidas($post['id']) ?> curtida(s)
 
                 <div style="margin-left:20px; margin-top:10px;">
                     <?php foreach (listarComentarios($post['id']) as $comentario): ?>
                         <p>
+                            <?= htmlFotoPerfil($comentario['foto_perfil'], 24) ?>
                             <strong><?= htmlspecialchars($comentario['nome_completo']) ?>:</strong>
                             <?= htmlspecialchars($comentario['conteudo']) ?>
                             <br>

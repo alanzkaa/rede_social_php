@@ -13,21 +13,33 @@ $erro = null;
 $sucesso = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nomeCompleto   = trim($_POST['nome_completo'] ?? '');
-    $nomeUsuario    = trim($_POST['nome_usuario'] ?? '') ?: null;
-    $dataNascimento = $_POST['data_nascimento'] ?? null;
+    $acao = $_POST['acao'] ?? '';
 
-    if ($nomeCompleto === '') {
-        $erro = 'O nome completo é obrigatório.';
-    } else {
-        $resultado = atualizarPerfil($usuarioId, $nomeCompleto, $nomeUsuario, $dataNascimento ?: null);
+    if ($acao === 'foto') {
+        $resultadoFoto = atualizarFotoPerfil($usuarioId, $_FILES['foto']);
 
-        if ($resultado === true) {
+        if ($resultadoFoto === true) {
             $sucesso = true;
-            // Recarrega os dados atualizados para exibir no formulário.
             $usuario = buscarUsuarioPorId($usuarioId);
         } else {
-            $erro = $resultado;
+            $erro = $resultadoFoto;
+        }
+    } else {
+        $nomeCompleto   = trim($_POST['nome_completo'] ?? '');
+        $nomeUsuario    = trim($_POST['nome_usuario'] ?? '') ?: null;
+        $dataNascimento = $_POST['data_nascimento'] ?? null;
+
+        if ($nomeCompleto === '') {
+            $erro = 'O nome completo é obrigatório.';
+        } else {
+            $resultado = atualizarPerfil($usuarioId, $nomeCompleto, $nomeUsuario, $dataNascimento ?: null);
+
+            if ($resultado === true) {
+                $sucesso = true;
+                $usuario = buscarUsuarioPorId($usuarioId);
+            } else {
+                $erro = $resultado;
+            }
         }
     }
 }
@@ -50,7 +62,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p style="color:red;"><?= htmlspecialchars($erro) ?></p>
     <?php endif; ?>
 
+    <h2>Foto de perfil</h2>
+
+    <?php if ($usuario['foto_perfil']): ?>
+        <img src="uploads/<?= htmlspecialchars($usuario['foto_perfil']) ?>" alt="Foto de perfil" width="120"><br>
+    <?php else: ?>
+        <p>(Nenhuma foto definida)</p>
+    <?php endif; ?>
+
+    <form method="POST" action="perfil_editar.php" enctype="multipart/form-data">
+        <input type="hidden" name="acao" value="foto">
+        <input type="file" name="foto" accept="image/jpeg,image/png,image/gif" required>
+        <button type="submit">Enviar foto</button>
+    </form>
+
+    <hr>
+
+    <h2>Dados pessoais</h2>
+
     <form method="POST" action="perfil_editar.php">
+        <input type="hidden" name="acao" value="dados">
+
         <label>Nome completo:<br>
             <input type="text" name="nome_completo" value="<?= htmlspecialchars($usuario['nome_completo']) ?>" required>
         </label><br><br>
@@ -63,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="date" name="data_nascimento" value="<?= htmlspecialchars($usuario['data_nascimento'] ?? '') ?>">
         </label><br><br>
 
-        <p><em>E-mail: <?= htmlspecialchars($usuario['email']) ?> (não editável)</em></p>
+        <p><em>E-mail: <?= htmlspecialchars($usuario['email']) ?> (não editável por aqui)</em></p>
 
         <button type="submit">Salvar alterações</button>
     </form>

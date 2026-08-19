@@ -33,7 +33,7 @@ function listarComentarios(int $postagemId): array
 {
     $pdo = conectar();
 
-    $sql = "SELECT c.id, c.conteudo, c.data_criacao, u.nome_completo, u.nome_usuario
+    $sql = "SELECT c.id, c.conteudo, c.data_criacao, u.nome_completo, u.nome_usuario, u.foto_perfil
             FROM comentarios c
             JOIN usuarios u ON u.id = c.usuario_id
             WHERE c.postagem_id = :postagem_id

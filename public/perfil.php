@@ -19,6 +19,14 @@ $usuario = buscarUsuarioPorId($_SESSION['usuario_id']);
 
     <h1>Meu perfil</h1>
 
+    <?php if ($usuario['foto_perfil']): ?>
+        <img src="uploads/<?= htmlspecialchars($usuario['foto_perfil']) ?>" alt="Foto de perfil" width="120"><br><br>
+    <?php else: ?>
+        <div style="width:120px; height:120px; background:#ddd; display:flex; align-items:center; justify-content:center; border-radius:50%;">
+            sem foto
+        </div><br>
+    <?php endif; ?>
+
     <p><strong>Nome completo:</strong> <?= htmlspecialchars($usuario['nome_completo']) ?></p>
 
     <p><strong>E-mail:</strong> <?= htmlspecialchars($usuario['email']) ?></p>

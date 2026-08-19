@@ -33,7 +33,7 @@ function listarFeed(int $usuarioId): array
 
     // A subquery pega os IDs de todos os amigos confirmados (nos dois sentidos),
     // e incluímos o próprio usuário na lista via UNION, pra ele ver os próprios posts também.
-    $sql = "SELECT p.id, p.conteudo, p.data_criacao, u.id AS autor_id, u.nome_completo, u.nome_usuario
+    $sql = "SELECT p.id, p.conteudo, p.data_criacao, u.id AS autor_id, u.nome_completo, u.nome_usuario, u.foto_perfil
             FROM postagens p
             JOIN usuarios u ON u.id = p.usuario_id
             WHERE p.usuario_id IN (

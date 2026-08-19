@@ -61,7 +61,7 @@ function buscarUsuarioPorId(int $id): ?array
 {
     $pdo = conectar();
 
-    $sql = "SELECT id, nome_completo, email, nome_usuario, data_nascimento, data_cadastro
+    $sql = "SELECT id, nome_completo, email, nome_usuario, foto_perfil, data_nascimento, data_cadastro
             FROM usuarios WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);
@@ -130,4 +130,53 @@ function buscarUsuarios(string $termo, int $idExcluido): array
     $stmt->execute();
 
     return $stmt->fetchAll();
+}
+
+/**
+ * Salva a foto de perfil enviada via formulário (array vindo de $_FILES),
+ * atualiza o caminho no banco e retorna true, ou uma string de erro.
+ */
+function atualizarFotoPerfil(int $usuarioId, array $arquivo): bool|string
+{
+    // UPLOAD_ERR_OK confirma que o upload não teve erro (arquivo ausente, tamanho excedido pelo PHP, etc).
+    if ($arquivo['error'] !== UPLOAD_ERR_OK) {
+        return 'Erro no envio do arquivo. Tente novamente.';
+    }
+
+    $tiposPermitidos = [
+        'image/jpeg' => 'jpg',
+        'image/png'  => 'png',
+        'image/gif'  => 'gif',
+    ];
+
+    // Detecta o tipo real do arquivo pelo conteúdo, não pela extensão informada
+    // pelo navegador (extensão pode ser falsificada facilmente).
+    $tipoReal = mime_content_type($arquivo['tmp_name']);
+
+    if (!isset($tiposPermitidos[$tipoReal])) {
+        return 'Formato inválido. Envie uma imagem JPG, PNG ou GIF.';
+    }
+
+    $tamanhoMaximo = 2 * 1024 * 1024; // 2 MB
+    if ($arquivo['size'] > $tamanhoMaximo) {
+        return 'A imagem precisa ter no máximo 2MB.';
+    }
+
+    // Gera um nome de arquivo único, evitando sobrescrever fotos de outros usuários
+    // ou depender do nome original (que pode ter espaços, acentos, etc).
+    $extensao = $tiposPermitidos[$tipoReal];
+    $nomeArquivo = 'perfil_' . $usuarioId . '_' . uniqid() . '.' . $extensao;
+    $caminhoDestino = __DIR__ . '/../public/uploads/' . $nomeArquivo;
+
+    if (!move_uploaded_file($arquivo['tmp_name'], $caminhoDestino)) {
+        return 'Não foi possível salvar a imagem no servidor.';
+    }
+
+    $pdo = conectar();
+    $sql = "UPDATE usuarios SET foto_perfil = :foto WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':foto', $nomeArquivo);
+    $stmt->bindValue(':id', $usuarioId, PDO::PARAM_INT);
+
+    return $stmt->execute();
 }
