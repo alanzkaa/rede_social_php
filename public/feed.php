@@ -2,6 +2,7 @@
 session_start();
 
 require_once __DIR__ . '/../models/postagem.php';
+require_once __DIR__ . '/../models/curtida.php';
 require_once __DIR__ . '/../includes/auth.php';
 
 exigirLogin();
@@ -10,14 +11,19 @@ $usuarioId = $_SESSION['usuario_id'];
 $erro = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $conteudo = $_POST['conteudo'] ?? '';
-    $resultado = criarPostagem($usuarioId, $conteudo);
+    $acao = $_POST['acao'] ?? 'postar';
 
-    if ($resultado !== true) {
-        $erro = $resultado;
+    if ($acao === 'curtir') {
+        $postagemId = (int) ($_POST['postagem_id'] ?? 0);
+        alternarCurtida($usuarioId, $postagemId);
+    } else {
+        $conteudo = $_POST['conteudo'] ?? '';
+        $resultado = criarPostagem($usuarioId, $conteudo);
+
+        if ($resultado !== true) {
+            $erro = $resultado;
+        }
     }
-    // Se deu certo, não precisamos fazer nada além de deixar o código
-    // continuar e recarregar o feed já com o novo post listado.
 }
 
 $posts = listarFeed($usuarioId);
@@ -49,6 +55,7 @@ $posts = listarFeed($usuarioId);
     <?php endif; ?>
 
     <form method="POST" action="feed.php">
+        <input type="hidden" name="acao" value="postar">
         <textarea name="conteudo" rows="3" cols="50" placeholder="No que você está pensando?"></textarea><br>
         <button type="submit">Postar</button>
     </form>
@@ -69,6 +76,14 @@ $posts = listarFeed($usuarioId);
                 <br>
                 <small><?= date('d/m/Y H:i', strtotime($post['data_criacao'])) ?></small>
                 <p><?= nl2br(htmlspecialchars($post['conteudo'])) ?></p>
+
+                <?php $jaCurtiu = usuarioCurtiu($usuarioId, $post['id']); ?>
+                <form method="POST" action="feed.php" style="display:inline;">
+                    <input type="hidden" name="acao" value="curtir">
+                    <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
+                    <button type="submit"><?= $jaCurtiu ? 'Descurtir' : 'Curtir' ?></button>
+                </form>
+                <?= contarCurtidas($post['id']) ?> curtida(s)
             </div>
         <?php endforeach; ?>
     <?php endif; ?>
