@@ -42,16 +42,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         recusarSolicitacao($solicitacaoId, $usuarioLogadoId);
     } elseif ($acao === 'curtir') {
         $postagemId = (int) ($_POST['postagem_id'] ?? 0);
-        alternarCurtida($usuarioLogadoId, $postagemId);
+        $statusAtual = $ehProprioPerfil ? 'amigos' : verificarStatusAmizade($usuarioLogadoId, $idVisualizado)['status'];
+        if ($ehProprioPerfil || $statusAtual === 'amigos') {
+            alternarCurtida($usuarioLogadoId, $postagemId);
+        }
     } elseif ($acao === 'comentar') {
         $postagemId = (int) ($_POST['postagem_id'] ?? 0);
-        $conteudoComentario = $_POST['conteudo_comentario'] ?? '';
-        criarComentario($postagemId, $usuarioLogadoId, $conteudoComentario);
+        $statusAtual = $ehProprioPerfil ? 'amigos' : verificarStatusAmizade($usuarioLogadoId, $idVisualizado)['status'];
+        if ($ehProprioPerfil || $statusAtual === 'amigos') {
+            $conteudoComentario = $_POST['conteudo_comentario'] ?? '';
+            criarComentario($postagemId, $usuarioLogadoId, $conteudoComentario);
+        }
     }
 }
 
 $statusAmizade = $ehProprioPerfil ? null : verificarStatusAmizade($usuarioLogadoId, $idVisualizado);
-$posts = listarPostagensDoUsuario($idVisualizado);
+
+// Só mostra as postagens se for o próprio perfil, ou se os dois forem amigos.
+$podeVerPostagens = $ehProprioPerfil || ($statusAmizade['status'] === 'amigos');
+$posts = $podeVerPostagens ? listarPostagensDoUsuario($idVisualizado) : [];
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -127,7 +136,9 @@ $posts = listarPostagensDoUsuario($idVisualizado);
 
     <h2><?= $ehProprioPerfil ? 'Minhas postagens' : 'Postagens' ?></h2>
 
-    <?php if (empty($posts)): ?>
+    <?php if (!$podeVerPostagens): ?>
+        <p><em>Adicione essa pessoa como amiga para ver as postagens dela.</em></p>
+    <?php elseif (empty($posts)): ?>
         <p>Nenhuma postagem ainda.</p>
     <?php else: ?>
         <?php foreach ($posts as $post): ?>
@@ -139,7 +150,7 @@ $posts = listarPostagensDoUsuario($idVisualizado);
                 <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" style="display:inline;">
                     <input type="hidden" name="acao" value="curtir">
                     <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
-                    <button type="submit"><?= $jaCurtiu ? 'Descurtir' : 'Curtir' ?></button>
+                    <button type="submit"><?= $jaCurtiu ? '- Descurtir' : '+ Curtir' ?></button>
                 </form>
                 <?= contarCurtidas($post['id']) ?> curtida(s)
 
