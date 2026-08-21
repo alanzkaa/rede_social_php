@@ -163,7 +163,7 @@ $posts = $podeVerPostagens ? listarPostagensDoUsuario($idVisualizado) : [];
                 <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" style="display:inline;">
                     <input type="hidden" name="acao" value="curtir">
                     <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
-                    <button type="submit"><?= $jaCurtiu ? '- Descurtir' : '+ Curtir' ?></button>
+                    <button type="submit"><?= $jaCurtiu ? 'Descurtir' : 'Curtir' ?></button>
                 </form>
                 <?= contarCurtidas($post['id']) ?> curtida(s)
 
