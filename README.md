@@ -4,6 +4,9 @@ Projeto de estudo: uma rede social construída **do zero, sem framework**, em PH
 
 ## Preview
 
+<img width="1876" height="892" alt="image" src="https://github.com/user-attachments/assets/653acb50-d9b0-4bc1-91d4-49a4ebb79d96" />
+
+
 ## Funcionalidades
 
 - Cadastro e login de usuários (com senha em hash via `password_hash`)
