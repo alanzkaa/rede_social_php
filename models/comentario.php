@@ -46,3 +46,20 @@ function listarComentarios(int $postagemId): array
 
     return $stmt->fetchAll();
 }
+
+/**
+ * Exclui um comentário, mas somente se ele pertencer ao usuário informado.
+ * Retorna true se de fato excluiu algo.
+ */
+function excluirComentario(int $comentarioId, int $usuarioId): bool
+{
+    $pdo = conectar();
+
+    $sql = "DELETE FROM comentarios WHERE id = :id AND usuario_id = :usuario_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':id', $comentarioId, PDO::PARAM_INT);
+    $stmt->bindValue(':usuario_id', $usuarioId, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->rowCount() > 0;
+}

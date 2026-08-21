@@ -31,6 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ok = recusarSolicitacao($solicitacaoId, $usuarioId);
         $mensagem = $ok ? 'Solicitação recusada.' : 'Não foi possível recusar essa solicitação.';
     }
+
+    if ($acao === 'desfazer_amizade') {
+        $amigoId = (int) ($_POST['amigo_id'] ?? 0);
+        $ok = desfazerAmizade($usuarioId, $amigoId);
+        $mensagem = $ok ? 'Amizade desfeita.' : 'Não foi possível desfazer a amizade.';
+    }
 }
 
 // Busca de usuários (GET, via campo de pesquisa).
@@ -121,6 +127,11 @@ $amigos = listarAmigos($usuarioId);
                     <?php if ($amigo['nome_usuario']): ?>
                         (@<?= htmlspecialchars($amigo['nome_usuario']) ?>)
                     <?php endif; ?>
+                    <form method="POST" action="amigos.php" style="display:inline;" onsubmit="return confirm('Desfazer amizade com essa pessoa?');">
+                        <input type="hidden" name="acao" value="desfazer_amizade">
+                        <input type="hidden" name="amigo_id" value="<?= (int) $amigo['id'] ?>">
+                        <button type="submit">Desfazer amizade</button>
+                    </form>
                 </li>
             <?php endforeach; ?>
         </ul>

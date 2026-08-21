@@ -23,6 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $postagemId = (int) ($_POST['postagem_id'] ?? 0);
         $conteudoComentario = $_POST['conteudo_comentario'] ?? '';
         criarComentario($postagemId, $usuarioId, $conteudoComentario);
+    } elseif ($acao === 'excluir_post') {
+        $postagemId = (int) ($_POST['postagem_id'] ?? 0);
+        excluirPostagem($postagemId, $usuarioId);
+    } elseif ($acao === 'excluir_comentario') {
+        $comentarioId = (int) ($_POST['comentario_id'] ?? 0);
+        excluirComentario($comentarioId, $usuarioId);
     } else {
         $conteudo = $_POST['conteudo'] ?? '';
         $resultado = criarPostagem($usuarioId, $conteudo);
@@ -91,9 +97,17 @@ $usuarioLogado = buscarUsuarioPorId($usuarioId);
                 <form method="POST" action="feed.php" style="display:inline;">
                     <input type="hidden" name="acao" value="curtir">
                     <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
-                    <button type="submit"><?= $jaCurtiu ? 'Descurtir' : 'Curtir' ?></button>
+                    <button type="submit"><?= $jaCurtiu ? '- Descurtir' : '+ Curtir' ?></button>
                 </form>
                 <?= contarCurtidas($post['id']) ?> curtida(s)
+
+                <?php if ((int) $post['autor_id'] === $usuarioId): ?>
+                    <form method="POST" action="feed.php" style="display:inline;" onsubmit="return confirm('Excluir esta postagem?');">
+                        <input type="hidden" name="acao" value="excluir_post">
+                        <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
+                        <button type="submit">Excluir</button>
+                    </form>
+                <?php endif; ?>
 
                 <div style="margin-left:20px; margin-top:10px;">
                     <?php foreach (listarComentarios($post['id']) as $comentario): ?>
@@ -103,6 +117,14 @@ $usuarioLogado = buscarUsuarioPorId($usuarioId);
                             <?= htmlspecialchars($comentario['conteudo']) ?>
                             <br>
                             <small><?= date('d/m/Y H:i', strtotime($comentario['data_criacao'])) ?></small>
+
+                            <?php if ((int) $comentario['autor_id'] === $usuarioId): ?>
+                                <form method="POST" action="feed.php" style="display:inline;" onsubmit="return confirm('Excluir este comentário?');">
+                                    <input type="hidden" name="acao" value="excluir_comentario">
+                                    <input type="hidden" name="comentario_id" value="<?= (int) $comentario['id'] ?>">
+                                    <button type="submit">Excluir</button>
+                                </form>
+                            <?php endif; ?>
                         </p>
                     <?php endforeach; ?>
 

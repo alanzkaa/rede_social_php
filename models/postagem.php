@@ -74,3 +74,21 @@ function listarPostagensDoUsuario(int $usuarioId): array
 
     return $stmt->fetchAll();
 }
+
+/**
+ * Exclui uma postagem, mas somente se ela pertencer ao usuário informado
+ * (evita que alguém apague postagem de outra pessoa manipulando o formulário).
+ * Retorna true se de fato excluiu algo.
+ */
+function excluirPostagem(int $postagemId, int $usuarioId): bool
+{
+    $pdo = conectar();
+
+    $sql = "DELETE FROM postagens WHERE id = :id AND usuario_id = :usuario_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':id', $postagemId, PDO::PARAM_INT);
+    $stmt->bindValue(':usuario_id', $usuarioId, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->rowCount() > 0;
+}

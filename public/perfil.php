@@ -53,6 +53,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conteudoComentario = $_POST['conteudo_comentario'] ?? '';
             criarComentario($postagemId, $usuarioLogadoId, $conteudoComentario);
         }
+    } elseif ($acao === 'desfazer_amizade' && !$ehProprioPerfil) {
+        $ok = desfazerAmizade($usuarioLogadoId, $idVisualizado);
+        $mensagem = $ok ? 'Amizade desfeita.' : 'Não foi possível desfazer a amizade.';
+    } elseif ($acao === 'excluir_post') {
+        $postagemId = (int) ($_POST['postagem_id'] ?? 0);
+        excluirPostagem($postagemId, $usuarioLogadoId);
+    } elseif ($acao === 'excluir_comentario') {
+        $comentarioId = (int) ($_POST['comentario_id'] ?? 0);
+        excluirComentario($comentarioId, $usuarioLogadoId);
     }
 }
 
@@ -125,6 +134,10 @@ $posts = $podeVerPostagens ? listarPostagensDoUsuario($idVisualizado) : [];
             </form>
         <?php elseif ($statusAmizade['status'] === 'amigos'): ?>
             <p><em>Vocês são amigos.</em></p>
+            <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" onsubmit="return confirm('Desfazer amizade com essa pessoa?');">
+                <input type="hidden" name="acao" value="desfazer_amizade">
+                <button type="submit">Desfazer amizade</button>
+            </form>
         <?php endif; ?>
 
         <br><br>
@@ -154,6 +167,14 @@ $posts = $podeVerPostagens ? listarPostagensDoUsuario($idVisualizado) : [];
                 </form>
                 <?= contarCurtidas($post['id']) ?> curtida(s)
 
+                <?php if ((int) $post['autor_id'] === $usuarioLogadoId): ?>
+                    <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" style="display:inline;" onsubmit="return confirm('Excluir esta postagem?');">
+                        <input type="hidden" name="acao" value="excluir_post">
+                        <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
+                        <button type="submit">Excluir</button>
+                    </form>
+                <?php endif; ?>
+
                 <div style="margin-left:20px; margin-top:10px;">
                     <?php foreach (listarComentarios($post['id']) as $comentario): ?>
                         <p>
@@ -162,6 +183,14 @@ $posts = $podeVerPostagens ? listarPostagensDoUsuario($idVisualizado) : [];
                             <?= htmlspecialchars($comentario['conteudo']) ?>
                             <br>
                             <small><?= date('d/m/Y H:i', strtotime($comentario['data_criacao'])) ?></small>
+
+                            <?php if ((int) $comentario['autor_id'] === $usuarioLogadoId): ?>
+                                <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" style="display:inline;" onsubmit="return confirm('Excluir este comentário?');">
+                                    <input type="hidden" name="acao" value="excluir_comentario">
+                                    <input type="hidden" name="comentario_id" value="<?= (int) $comentario['id'] ?>">
+                                    <button type="submit">Excluir</button>
+                                </form>
+                            <?php endif; ?>
                         </p>
                     <?php endforeach; ?>
 

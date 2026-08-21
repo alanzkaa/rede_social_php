@@ -165,3 +165,28 @@ function verificarStatusAmizade(int $usuarioId, int $outroId): array
 
     return ['status' => 'pendente_recebida', 'solicitacao_id' => $relacao['id']];
 }
+
+/**
+ * Desfaz uma amizade já confirmada entre dois usuários (em qualquer sentido
+ * que a relação tenha sido salva). Retorna true se de fato removeu algo.
+ */
+function desfazerAmizade(int $usuarioId, int $amigoId): bool
+{
+    $pdo = conectar();
+
+    $sql = "DELETE FROM amizades
+            WHERE status = 'aceita'
+              AND (
+                    (usuario_id = :usuario_id AND amigo_id = :amigo_id)
+                 OR (usuario_id = :amigo_id2 AND amigo_id = :usuario_id2)
+              )";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':usuario_id', $usuarioId, PDO::PARAM_INT);
+    $stmt->bindValue(':amigo_id', $amigoId, PDO::PARAM_INT);
+    $stmt->bindValue(':amigo_id2', $amigoId, PDO::PARAM_INT);
+    $stmt->bindValue(':usuario_id2', $usuarioId, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->rowCount() > 0;
+}
