@@ -97,7 +97,7 @@ $usuarioLogado = buscarUsuarioPorId($usuarioId);
                 <form method="POST" action="feed.php" style="display:inline;">
                     <input type="hidden" name="acao" value="curtir">
                     <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
-                    <button type="submit"><?= $jaCurtiu ? '- Descurtir' : '+ Curtir' ?></button>
+                    <button type="submit"><?= $jaCurtiu ? 'Descurtir' : 'Curtir' ?></button>
                 </form>
                 <?= contarCurtidas($post['id']) ?> curtida(s)
 
