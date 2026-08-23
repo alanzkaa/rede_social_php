@@ -1,0 +1,332 @@
+/* =========================================================
+   BlueSpace — folha de estilos (identidade Frutiger Aero)
+   Paleta, tipografia e componentes usados no projeto.
+   ========================================================= */
+
+:root {
+    /* Paleta */
+    --azul-claro: #5FA8F0;
+    --azul-primario: #1E6FD9;
+    --azul-navy: #0B3D6B;
+    --verde-claro: #8BD46E;
+    --verde-aero: #4CAF50;
+    --prata: #C7D3DD;
+    --vidro: rgba(255, 255, 255, 0.62);
+    --vidro-borda: rgba(255, 255, 255, 0.85);
+    --fundo: #EEF4FA;
+    --texto: #1B2A3B;
+    --texto-suave: #55677A;
+
+    /* Reutilizáveis */
+    --raio: 14px;
+    --sombra-suave: 0 2px 8px rgba(11, 61, 107, 0.10);
+    --sombra-card: 0 4px 16px rgba(11, 61, 107, 0.14);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: "Trebuchet MS", Verdana, sans-serif;
+    color: var(--texto);
+    min-height: 100vh;
+    /* Fundo quase branco, com dois brilhos discretos nos cantos
+       (o "toque" Aero, sem virar um céu gigante de fundo). */
+    background:
+        radial-gradient(560px circle at 88% -8%, rgba(140, 195, 255, 0.35), transparent 60%),
+        radial-gradient(480px circle at -8% 108%, rgba(150, 220, 175, 0.22), transparent 60%),
+        var(--fundo);
+}
+
+h1, h2, h3 { font-family: Tahoma, Geneva, sans-serif; color: var(--azul-navy); }
+
+a { color: var(--azul-primario); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+:focus-visible { outline: 3px solid var(--azul-primario); outline-offset: 2px; }
+
+/* ===== Barra de navegação ===== */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 24px;
+    /* Duas camadas: um reflexo claro na metade de cima (efeito "gel")
+       sobre o gradiente azul principal. */
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 45%),
+        linear-gradient(180deg, var(--azul-claro), var(--azul-primario));
+    box-shadow: 0 3px 10px rgba(11, 61, 107, 0.25);
+}
+
+.navbar__brand {
+    font-family: Tahoma, sans-serif;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    white-space: nowrap;
+}
+
+.navbar__nav { display: flex; gap: 4px; flex: 1; margin-left: 12px; }
+
+.navbar__nav a {
+    color: rgba(255, 255, 255, 0.9);
+    font-family: Tahoma, sans-serif;
+    font-size: 0.9rem;
+    padding: 8px 14px;
+    border-radius: 999px;
+}
+
+.navbar__nav a:hover,
+.navbar__nav a.is-active {
+    background: rgba(255, 255, 255, 0.22);
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Botão "Orb" — o elemento de assinatura do BlueSpace.
+   <details>/<summary> dá o comportamento de menu suspenso sem precisar de JS. */
+.orb-menu { position: relative; }
+.orb-menu summary { list-style: none; cursor: pointer; }
+.orb-menu summary::-webkit-details-marker { display: none; }
+
+.orb {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 32% 28%, #eaf5ff 0%, var(--azul-claro) 45%, var(--azul-primario) 100%);
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 6px rgba(11, 61, 107, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.orb img { width: 100%; height: 100%; object-fit: cover; }
+
+.orb-dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px;
+    background: var(--vidro);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--vidro-borda);
+    border-radius: var(--raio);
+    box-shadow: var(--sombra-card);
+}
+
+.orb-dropdown a {
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-family: Tahoma, sans-serif;
+    font-size: 0.9rem;
+    color: var(--texto);
+}
+
+.orb-dropdown a:hover { background: rgba(30, 111, 217, 0.10); text-decoration: none; }
+
+/* ===== Layout de 3 colunas ===== */
+.layout {
+    display: grid;
+    grid-template-columns: 220px 1fr 240px;
+    gap: 20px;
+    max-width: 1180px;
+    margin: 20px auto;
+    padding: 0 20px;
+    align-items: start;
+}
+
+.sidebar {
+    position: sticky;
+    top: 78px;
+    padding: 16px;
+    background: var(--vidro);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--vidro-borda);
+    border-radius: var(--raio);
+    box-shadow: var(--sombra-suave);
+}
+
+.sidebar__profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--prata);
+}
+
+.sidebar__profile strong { font-family: Tahoma, sans-serif; font-size: 0.95rem; }
+
+.sidebar__nav { display: flex; flex-direction: column; gap: 4px; }
+
+.sidebar__nav a {
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-family: Tahoma, sans-serif;
+    font-size: 0.9rem;
+    color: var(--texto);
+}
+
+.sidebar__nav a:hover { background: rgba(30, 111, 217, 0.10); text-decoration: none; }
+
+.sidebar--right h2 { font-size: 1rem; margin-top: 0; }
+
+.friend-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.friend-list li { display: flex; align-items: center; gap: 8px; font-size: 0.86rem; }
+.sidebar--right .ver-todos { display: inline-block; margin-top: 12px; font-size: 0.85rem; }
+
+/* ===== Feed central ===== */
+.feed { display: flex; flex-direction: column; gap: 16px; }
+
+.card {
+    background: var(--vidro);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--vidro-borda);
+    border-radius: var(--raio);
+    box-shadow: var(--sombra-card);
+    overflow: hidden;
+}
+
+.compose-box { padding: 16px; }
+.compose-box__row { display: flex; gap: 10px; align-items: flex-start; }
+
+.compose-box textarea {
+    flex: 1;
+    min-height: 60px;
+    resize: vertical;
+    padding: 10px;
+    border: 1px solid var(--prata);
+    border-radius: 10px;
+    font-family: "Trebuchet MS", sans-serif;
+    font-size: 0.95rem;
+}
+
+.compose-box__footer { display: flex; justify-content: flex-end; margin-top: 10px; }
+
+/* Faixa gradiente no topo de cada post — versão discreta da "barra de título" */
+.post__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 60%),
+        linear-gradient(180deg, var(--azul-claro), var(--azul-primario));
+    color: #fff;
+}
+
+.post__header a { color: #fff; font-family: Tahoma, sans-serif; font-weight: bold; font-size: 0.92rem; }
+.post__header time { display: block; font-size: 0.74rem; color: rgba(255, 255, 255, 0.85); }
+
+.post__body { padding: 14px 16px 6px; }
+.post__body p { margin: 0; line-height: 1.5; }
+
+.post__actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 16px 14px; }
+.post__likes { font-size: 0.85rem; color: var(--texto-suave); }
+
+.post__comments { padding: 0 16px 16px; margin-top: 4px; border-top: 1px solid var(--prata); }
+
+.comment { display: flex; gap: 8px; padding: 10px 0; border-bottom: 1px dashed var(--prata); }
+.comment:last-of-type { border-bottom: none; }
+.comment__body { font-size: 0.88rem; }
+.comment__body a { font-family: Tahoma, sans-serif; }
+.comment__meta { display: flex; align-items: center; gap: 8px; margin-top: 2px; font-size: 0.72rem; color: var(--texto-suave); }
+
+.comment-form { display: flex; gap: 8px; margin-top: 12px; }
+.comment-form input[type="text"] {
+    flex: 1;
+    padding: 8px 14px;
+    border: 1px solid var(--prata);
+    border-radius: 999px;
+    font-family: "Trebuchet MS", sans-serif;
+}
+
+.empty-state { padding: 30px 16px; text-align: center; color: var(--texto-suave); }
+
+.alert-error {
+    padding: 10px 14px;
+    border: 1px solid #F3B4B4;
+    border-radius: 10px;
+    background: #FFEAEA;
+    color: #8A2020;
+    font-size: 0.9rem;
+}
+
+/* ===== Avatares ===== */
+.avatar {
+    display: inline-block;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(11, 61, 107, 0.25);
+    object-fit: cover;
+    vertical-align: middle;
+}
+
+.avatar--initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-family: Tahoma, sans-serif;
+    font-weight: bold;
+    background: radial-gradient(circle at 30% 25%, var(--verde-claro), var(--verde-aero));
+}
+
+/* ===== Botões "gel" ===== */
+.btn {
+    border: none;
+    border-radius: 999px;
+    padding: 8px 18px;
+    cursor: pointer;
+    font-family: Tahoma, sans-serif;
+    font-size: 0.85rem;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(11, 61, 107, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+    transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.btn:hover { filter: brightness(1.06); }
+.btn:active { transform: translateY(1px); }
+.btn--small { padding: 6px 14px; font-size: 0.78rem; }
+
+.btn--primary { color: #fff; background: linear-gradient(180deg, var(--azul-claro), var(--azul-primario)); }
+.btn--success { color: #fff; background: linear-gradient(180deg, var(--verde-claro), var(--verde-aero)); }
+.btn--success.is-active { background: linear-gradient(180deg, #E8837E, #C0392B); }
+
+.btn-link-danger {
+    padding: 4px 6px;
+    border: none;
+    background: none;
+    color: #B24444;
+    font-family: Tahoma, sans-serif;
+    font-size: 0.78rem;
+    cursor: pointer;
+}
+.btn-link-danger:hover { text-decoration: underline; }
+
+/* ===== Responsivo ===== */
+@media (max-width: 880px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+    .sidebar--right { order: 3; }
+    /* Em telas pequenas, a navegação principal fica só dentro do menu do Orb,
+       pra barra superior não quebrar linha. */
+    .navbar__nav { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+}
