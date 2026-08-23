@@ -27,7 +27,7 @@ if (!$usuario) {
 
 $mensagem = null;
 
-// Ações vindas de formulários (amizade, curtir, comentar).
+// Ações vindas de formulários (amizade, curtir, comentar, excluir).
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $acao = $_POST['acao'] ?? '';
 
@@ -70,140 +70,167 @@ $statusAmizade = $ehProprioPerfil ? null : verificarStatusAmizade($usuarioLogado
 // Só mostra as postagens se for o próprio perfil, ou se os dois forem amigos.
 $podeVerPostagens = $ehProprioPerfil || ($statusAmizade['status'] === 'amigos');
 $posts = $podeVerPostagens ? listarPostagensDoUsuario($idVisualizado) : [];
+
+// Dados do usuário logado, pra montar a navbar/sidebar (que sempre mostram
+// o PRÓPRIO usuário, mesmo quando a página exibe o perfil de outra pessoa).
+$usuarioLogado = $ehProprioPerfil ? $usuario : buscarUsuarioPorId($usuarioLogadoId);
+$paginaAtual = '';
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title><?= $ehProprioPerfil ? 'Meu perfil' : htmlspecialchars($usuario['nome_completo']) ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BlueSpace · <?= $ehProprioPerfil ? 'Meu perfil' : htmlspecialchars($usuario['nome_completo']) ?></title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <h1><?= $ehProprioPerfil ? 'Meu perfil' : htmlspecialchars($usuario['nome_completo']) ?></h1>
+    <?php require __DIR__ . '/../includes/navbar.php'; ?>
 
-    <?= htmlFotoPerfil($usuario['foto_perfil'], 120) ?><br><br>
+    <div class="layout layout--2col">
 
-    <?php if ($mensagem): ?>
-        <p><strong><?= htmlspecialchars($mensagem) ?></strong></p>
-    <?php endif; ?>
+        <?php require __DIR__ . '/../includes/sidebar_nav.php'; ?>
 
-    <p><strong>Nome completo:</strong> <?= htmlspecialchars($usuario['nome_completo']) ?></p>
+        <main class="feed">
 
-    <?php if ($ehProprioPerfil): ?>
-        <p><strong>E-mail:</strong> <?= htmlspecialchars($usuario['email']) ?></p>
-    <?php endif; ?>
+            <?php if ($mensagem): ?>
+                <p class="alert-info"><?= htmlspecialchars($mensagem) ?></p>
+            <?php endif; ?>
 
-    <p><strong>Nome de usuário:</strong>
-        <?= $usuario['nome_usuario'] ? htmlspecialchars($usuario['nome_usuario']) : '(não definido)' ?>
-    </p>
+            <section class="card card--padded profile-header">
+                <?= htmlFotoPerfil($usuario['foto_perfil'], 96, $usuario['nome_completo']) ?>
 
-    <p><strong>Data de nascimento:</strong>
-        <?= $usuario['data_nascimento'] ? date('d/m/Y', strtotime($usuario['data_nascimento'])) : '(não informada)' ?>
-    </p>
+                <div class="profile-header__info">
+                    <h1><?= $ehProprioPerfil ? 'Meu perfil' : htmlspecialchars($usuario['nome_completo']) ?></h1>
 
-    <p><strong>Membro desde:</strong>
-        <?= date('d/m/Y', strtotime($usuario['data_cadastro'])) ?>
-    </p>
+                    <div class="profile-header__meta">
+                        <?php if ($ehProprioPerfil): ?>
+                            <span><?= htmlspecialchars($usuario['email']) ?></span>
+                        <?php endif; ?>
+                        <span>
+                            <?= $usuario['nome_usuario'] ? '@' . htmlspecialchars($usuario['nome_usuario']) : 'sem nome de usuário' ?>
+                        </span>
+                        <span>
+                            <?= $usuario['data_nascimento'] ? date('d/m/Y', strtotime($usuario['data_nascimento'])) : 'data de nascimento não informada' ?>
+                        </span>
+                        <span>Membro desde <?= date('d/m/Y', strtotime($usuario['data_cadastro'])) ?></span>
+                    </div>
 
-    <?php if ($ehProprioPerfil): ?>
+                    <div class="profile-header__actions">
+                        <?php if ($ehProprioPerfil): ?>
+                            <a href="perfil_editar.php" class="btn btn--primary btn--small">Editar perfil</a>
+                        <?php elseif ($statusAmizade['status'] === 'nenhuma'): ?>
+                            <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>">
+                                <input type="hidden" name="acao" value="enviar">
+                                <button type="submit" class="btn btn--primary btn--small">Adicionar amigo</button>
+                            </form>
+                        <?php elseif ($statusAmizade['status'] === 'pendente_enviada'): ?>
+                            <span class="texto-suave">Solicitação enviada, aguardando resposta.</span>
+                        <?php elseif ($statusAmizade['status'] === 'pendente_recebida'): ?>
+                            <span class="texto-suave">Essa pessoa te enviou uma solicitação.</span>
+                            <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>">
+                                <input type="hidden" name="acao" value="aceitar">
+                                <input type="hidden" name="solicitacao_id" value="<?= $statusAmizade['solicitacao_id'] ?>">
+                                <button type="submit" class="btn btn--success btn--small">Aceitar</button>
+                            </form>
+                            <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>">
+                                <input type="hidden" name="acao" value="recusar">
+                                <input type="hidden" name="solicitacao_id" value="<?= $statusAmizade['solicitacao_id'] ?>">
+                                <button type="submit" class="btn-link-danger">Recusar</button>
+                            </form>
+                        <?php elseif ($statusAmizade['status'] === 'amigos'): ?>
+                            <span class="texto-suave">Vocês são amigos.</span>
+                            <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" onsubmit="return confirm('Desfazer amizade com essa pessoa?');">
+                                <input type="hidden" name="acao" value="desfazer_amizade">
+                                <button type="submit" class="btn-link-danger">Desfazer amizade</button>
+                            </form>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </section>
 
-        <a href="perfil_editar.php">Editar perfil</a>
-        |
-        <a href="feed.php">Voltar ao feed</a>
+            <h2 class="section-title"><?= $ehProprioPerfil ? 'Minhas postagens' : 'Postagens' ?></h2>
 
-    <?php else: ?>
+            <?php if (!$podeVerPostagens): ?>
+                <div class="card empty-state">Adicione essa pessoa como amiga para ver as postagens dela.</div>
+            <?php elseif (empty($posts)): ?>
+                <div class="card empty-state">Nenhuma postagem ainda.</div>
+            <?php else: ?>
+                <?php foreach ($posts as $post): ?>
+                    <article class="card post">
 
-        <?php if ($statusAmizade['status'] === 'nenhuma'): ?>
-            <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>">
-                <input type="hidden" name="acao" value="enviar">
-                <button type="submit">Adicionar amigo</button>
-            </form>
-        <?php elseif ($statusAmizade['status'] === 'pendente_enviada'): ?>
-            <p><em>Solicitação enviada, aguardando resposta.</em></p>
-        <?php elseif ($statusAmizade['status'] === 'pendente_recebida'): ?>
-            <p><em>Essa pessoa te enviou uma solicitação de amizade.</em></p>
-            <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" style="display:inline;">
-                <input type="hidden" name="acao" value="aceitar">
-                <input type="hidden" name="solicitacao_id" value="<?= $statusAmizade['solicitacao_id'] ?>">
-                <button type="submit">Aceitar</button>
-            </form>
-            <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" style="display:inline;">
-                <input type="hidden" name="acao" value="recusar">
-                <input type="hidden" name="solicitacao_id" value="<?= $statusAmizade['solicitacao_id'] ?>">
-                <button type="submit">Recusar</button>
-            </form>
-        <?php elseif ($statusAmizade['status'] === 'amigos'): ?>
-            <p><em>Vocês são amigos.</em></p>
-            <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" onsubmit="return confirm('Desfazer amizade com essa pessoa?');">
-                <input type="hidden" name="acao" value="desfazer_amizade">
-                <button type="submit">Desfazer amizade</button>
-            </form>
-        <?php endif; ?>
+                        <div class="post__header">
+                            <?= htmlFotoPerfil($usuario['foto_perfil'], 36, $usuario['nome_completo']) ?>
+                            <time><?= date('d/m/Y H:i', strtotime($post['data_criacao'])) ?></time>
+                        </div>
 
-        <br><br>
-        <a href="feed.php">Voltar ao feed</a>
+                        <div class="post__body">
+                            <p><?= nl2br(htmlspecialchars($post['conteudo'])) ?></p>
+                        </div>
 
-    <?php endif; ?>
+                        <div class="post__actions">
+                            <?php $jaCurtiu = usuarioCurtiu($usuarioLogadoId, $post['id']); ?>
+                            <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>">
+                                <input type="hidden" name="acao" value="curtir">
+                                <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
+                                <button type="submit" class="btn btn--success btn--small<?= $jaCurtiu ? ' is-active' : '' ?>">
+                                    <?= $jaCurtiu ? 'Descurtir' : 'Curtir' ?>
+                                </button>
+                            </form>
+                            <span class="post__likes"><?= contarCurtidas($post['id']) ?> curtida(s)</span>
 
-    <hr>
-
-    <h2><?= $ehProprioPerfil ? 'Minhas postagens' : 'Postagens' ?></h2>
-
-    <?php if (!$podeVerPostagens): ?>
-        <p><em>Adicione essa pessoa como amiga para ver as postagens dela.</em></p>
-    <?php elseif (empty($posts)): ?>
-        <p>Nenhuma postagem ainda.</p>
-    <?php else: ?>
-        <?php foreach ($posts as $post): ?>
-            <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-                <small><?= date('d/m/Y H:i', strtotime($post['data_criacao'])) ?></small>
-                <p><?= nl2br(htmlspecialchars($post['conteudo'])) ?></p>
-
-                <?php $jaCurtiu = usuarioCurtiu($usuarioLogadoId, $post['id']); ?>
-                <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" style="display:inline;">
-                    <input type="hidden" name="acao" value="curtir">
-                    <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
-                    <button type="submit"><?= $jaCurtiu ? 'Descurtir' : 'Curtir' ?></button>
-                </form>
-                <?= contarCurtidas($post['id']) ?> curtida(s)
-
-                <?php if ((int) $post['autor_id'] === $usuarioLogadoId): ?>
-                    <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" style="display:inline;" onsubmit="return confirm('Excluir esta postagem?');">
-                        <input type="hidden" name="acao" value="excluir_post">
-                        <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
-                        <button type="submit">Excluir</button>
-                    </form>
-                <?php endif; ?>
-
-                <div style="margin-left:20px; margin-top:10px;">
-                    <?php foreach (listarComentarios($post['id']) as $comentario): ?>
-                        <p>
-                            <?= htmlFotoPerfil($comentario['foto_perfil'], 24) ?>
-                            <a href="perfil.php?id=<?= (int) $comentario['autor_id'] ?>"><strong><?= htmlspecialchars($comentario['nome_completo']) ?>:</strong></a>
-                            <?= htmlspecialchars($comentario['conteudo']) ?>
-                            <br>
-                            <small><?= date('d/m/Y H:i', strtotime($comentario['data_criacao'])) ?></small>
-
-                            <?php if ((int) $comentario['autor_id'] === $usuarioLogadoId): ?>
-                                <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" style="display:inline;" onsubmit="return confirm('Excluir este comentário?');">
-                                    <input type="hidden" name="acao" value="excluir_comentario">
-                                    <input type="hidden" name="comentario_id" value="<?= (int) $comentario['id'] ?>">
-                                    <button type="submit">Excluir</button>
+                            <?php if ((int) $post['autor_id'] === $usuarioLogadoId): ?>
+                                <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" onsubmit="return confirm('Excluir esta postagem?');">
+                                    <input type="hidden" name="acao" value="excluir_post">
+                                    <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
+                                    <button type="submit" class="btn-link-danger">Excluir</button>
                                 </form>
                             <?php endif; ?>
-                        </p>
-                    <?php endforeach; ?>
+                        </div>
 
-                    <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>">
-                        <input type="hidden" name="acao" value="comentar">
-                        <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
-                        <input type="text" name="conteudo_comentario" placeholder="Escreva um comentário..." size="40">
-                        <button type="submit">Comentar</button>
-                    </form>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
+                        <div class="post__comments">
+                            <?php foreach (listarComentarios($post['id']) as $comentario): ?>
+                                <div class="comment">
+                                    <?= htmlFotoPerfil($comentario['foto_perfil'], 28, $comentario['nome_completo']) ?>
+                                    <div class="comment__body">
+                                        <a href="perfil.php?id=<?= (int) $comentario['autor_id'] ?>">
+                                            <?= htmlspecialchars($comentario['nome_completo']) ?>:
+                                        </a>
+                                        <?= htmlspecialchars($comentario['conteudo']) ?>
+
+                                        <div class="comment__meta">
+                                            <span><?= date('d/m/Y H:i', strtotime($comentario['data_criacao'])) ?></span>
+
+                                            <?php if ((int) $comentario['autor_id'] === $usuarioLogadoId): ?>
+                                                <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" onsubmit="return confirm('Excluir este comentário?');">
+                                                    <input type="hidden" name="acao" value="excluir_comentario">
+                                                    <input type="hidden" name="comentario_id" value="<?= (int) $comentario['id'] ?>">
+                                                    <button type="submit" class="btn-link-danger">Excluir</button>
+                                                </form>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+
+                            <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" class="comment-form">
+                                <input type="hidden" name="acao" value="comentar">
+                                <input type="hidden" name="postagem_id" value="<?= (int) $post['id'] ?>">
+                                <input type="text" name="conteudo_comentario" placeholder="Escreva um comentário...">
+                                <button type="submit" class="btn btn--primary btn--small">Comentar</button>
+                            </form>
+                        </div>
+
+                    </article>
+                <?php endforeach; ?>
+            <?php endif; ?>
+
+        </main>
+
+    </div>
+
+    <script src="js/orb.js"></script>
 
 </body>
 </html>

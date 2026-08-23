@@ -116,7 +116,7 @@ function buscarUsuarios(string $termo, int $idExcluido): array
 {
     $pdo = conectar();
 
-    $sql = "SELECT id, nome_completo, nome_usuario
+    $sql = "SELECT id, nome_completo, nome_usuario, foto_perfil
             FROM usuarios
             WHERE (nome_completo LIKE :termo OR nome_usuario LIKE :termo2)
               AND id != :id_excluido

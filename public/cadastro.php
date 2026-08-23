@@ -33,45 +33,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Cadastro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BlueSpace · Criar conta</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="auth-page">
 
-    <h1>Criar conta</h1>
+    <div class="card auth-card">
+        <div class="auth-card__brand">☁ BlueSpace</div>
 
-    <?php if ($sucesso): ?>
-        <p>Cadastro realizado com sucesso! <a href="login.php">Fazer login</a></p>
-    <?php else: ?>
+        <?php if ($sucesso): ?>
+            <h1>Conta criada!</h1>
+            <p class="alert-success">Cadastro realizado com sucesso! <a href="login.php">Fazer login</a></p>
+        <?php else: ?>
+            <h1>Criar conta</h1>
 
-        <?php if ($erro): ?>
-            <p style="color:red;"><?= htmlspecialchars($erro) ?></p>
+            <?php if ($erro): ?>
+                <p class="alert-error"><?= htmlspecialchars($erro) ?></p>
+            <?php endif; ?>
+
+            <form method="POST" action="cadastro.php">
+                <div class="campo">
+                    <label for="nome_completo">Nome completo</label>
+                    <input type="text" id="nome_completo" name="nome_completo" required>
+                </div>
+
+                <div class="campo">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="campo">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" required minlength="6">
+                </div>
+
+                <div class="campo">
+                    <label for="nome_usuario">Nome de usuário (opcional)</label>
+                    <input type="text" id="nome_usuario" name="nome_usuario">
+                </div>
+
+                <div class="campo">
+                    <label for="data_nascimento">Data de nascimento</label>
+                    <input type="date" id="data_nascimento" name="data_nascimento">
+                </div>
+
+                <button type="submit" class="btn btn--primary">Cadastrar</button>
+            </form>
         <?php endif; ?>
 
-        <form method="POST" action="cadastro.php">
-            <label>Nome completo:<br>
-                <input type="text" name="nome_completo" required>
-            </label><br><br>
-
-            <label>E-mail:<br>
-                <input type="email" name="email" required>
-            </label><br><br>
-
-            <label>Senha:<br>
-                <input type="password" name="senha" required minlength="6">
-            </label><br><br>
-
-            <label>Nome de usuário (opcional):<br>
-                <input type="text" name="nome_usuario">
-            </label><br><br>
-
-            <label>Data de nascimento:<br>
-                <input type="date" name="data_nascimento">
-            </label><br><br>
-
-            <button type="submit">Cadastrar</button>
-        </form>
-
-    <?php endif; ?>
+        <p class="auth-card__footer">Já tem conta? <a href="login.php">Entrar</a></p>
+    </div>
 
 </body>
 </html>

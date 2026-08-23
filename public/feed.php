@@ -47,6 +47,7 @@ $usuarioLogado = buscarUsuarioPorId($usuarioId);
 // com link "Ver todos" apontando pra página completa de amigos.
 $amigos = listarAmigos($usuarioId);
 $amigosPreview = array_slice($amigos, 0, 6);
+$paginaAtual = 'feed';
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -58,41 +59,11 @@ $amigosPreview = array_slice($amigos, 0, 6);
 </head>
 <body>
 
-    <header class="navbar">
-        <span class="navbar__brand">☁ BlueSpace</span>
-
-        <nav class="navbar__nav">
-            <a href="feed.php" class="is-active">Início</a>
-            <a href="amigos.php">Amigos</a>
-        </nav>
-
-        <details class="orb-menu">
-            <summary class="orb">
-                <?= htmlFotoPerfil($usuarioLogado['foto_perfil'], 40, $usuarioLogado['nome_completo']) ?>
-            </summary>
-            <div class="orb-dropdown">
-                <a href="perfil.php">Meu perfil</a>
-                <a href="perfil_editar.php">Editar perfil</a>
-                <a href="amigos.php">Amigos</a>
-                <a href="logout.php">Sair</a>
-            </div>
-        </details>
-    </header>
+    <?php require __DIR__ . '/../includes/navbar.php'; ?>
 
     <div class="layout">
 
-        <aside class="sidebar sidebar--left">
-            <div class="sidebar__profile">
-                <?= htmlFotoPerfil($usuarioLogado['foto_perfil'], 64, $usuarioLogado['nome_completo']) ?>
-                <strong><?= htmlspecialchars($usuarioLogado['nome_completo']) ?></strong>
-            </div>
-            <nav class="sidebar__nav">
-                <a href="perfil.php">Meu perfil</a>
-                <a href="perfil_editar.php">Editar perfil</a>
-                <a href="amigos.php">Amigos</a>
-                <a href="logout.php">Sair</a>
-            </nav>
-        </aside>
+        <?php require __DIR__ . '/../includes/sidebar_nav.php'; ?>
 
         <main class="feed">
 
@@ -216,15 +187,7 @@ $amigosPreview = array_slice($amigos, 0, 6);
 
     </div>
 
-    <script>
-        // Fecha o menu do Orb ao clicar fora dele.
-        document.addEventListener('click', function (evento) {
-            var menu = document.querySelector('.orb-menu');
-            if (menu && menu.hasAttribute('open') && !menu.contains(evento.target)) {
-                menu.removeAttribute('open');
-            }
-        });
-    </script>
+    <script src="js/orb.js"></script>
 
 </body>
 </html>

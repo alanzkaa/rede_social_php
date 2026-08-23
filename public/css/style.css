@@ -317,6 +317,107 @@ a:hover { text-decoration: underline; }
 }
 .btn-link-danger:hover { text-decoration: underline; }
 
+/* ===== Autenticação (login / cadastro) ===== */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.auth-card { width: 100%; max-width: 380px; padding: 28px 26px; }
+
+.auth-card__brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-family: Tahoma, sans-serif;
+    font-weight: bold;
+    font-size: 1.4rem;
+    color: var(--azul-navy);
+}
+
+.auth-card h1 { text-align: center; font-size: 1.1rem; margin: 4px 0 20px; }
+.auth-card .btn { width: 100%; margin-top: 6px; }
+.auth-card__footer { margin-top: 16px; text-align: center; font-size: 0.85rem; color: var(--texto-suave); }
+
+.alert-success {
+    padding: 10px 14px;
+    border: 1px solid #9FD9A8;
+    border-radius: 10px;
+    background: #EAF9EC;
+    color: #256B32;
+    font-size: 0.9rem;
+}
+
+.alert-info {
+    padding: 10px 14px;
+    border: 1px solid #BBDAFB;
+    border-radius: 10px;
+    background: #E7F1FC;
+    color: var(--azul-navy);
+    font-size: 0.9rem;
+}
+
+/* ===== Campos de formulário (reutilizados em login, cadastro, editar perfil) ===== */
+.campo { max-width: 360px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 4px; }
+.campo label { font-family: Tahoma, sans-serif; font-size: 0.85rem; color: var(--texto-suave); }
+
+.campo input[type="text"],
+.campo input[type="email"],
+.campo input[type="password"],
+.campo input[type="date"] {
+    padding: 9px 12px;
+    border: 1px solid var(--prata);
+    border-radius: 10px;
+    font-family: "Trebuchet MS", sans-serif;
+    font-size: 0.92rem;
+}
+
+.texto-suave { color: var(--texto-suave); font-size: 0.85rem; }
+
+/* ===== Layout de 2 colunas (perfil, editar perfil, amigos) ===== */
+.layout--2col { grid-template-columns: 220px 1fr; }
+
+.card--padded { padding: 20px; }
+.section-title { margin: 0 0 14px; font-size: 1rem; }
+
+/* Cabeçalho de perfil */
+.profile-header { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.profile-header__info h1 { margin: 0 0 4px; font-size: 1.3rem; }
+.profile-header__meta { display: flex; flex-direction: column; gap: 2px; font-size: 0.85rem; color: var(--texto-suave); }
+.profile-header__actions { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Upload de foto (editar perfil) */
+.foto-atual { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
+
+/* Página de amigos: busca + listas de pessoas */
+.search-form { display: flex; gap: 8px; }
+.search-form input[type="text"] {
+    flex: 1;
+    padding: 9px 14px;
+    border: 1px solid var(--prata);
+    border-radius: 999px;
+    font-family: "Trebuchet MS", sans-serif;
+}
+
+.people-list { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.people-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--prata);
+    border-radius: 12px;
+    flex-wrap: wrap;
+}
+.people-item__name { flex: 1; min-width: 150px; font-family: Tahoma, sans-serif; font-size: 0.92rem; }
+.people-item__actions { display: flex; gap: 6px; }
+
 /* ===== Responsivo ===== */
 @media (max-width: 880px) {
     .layout { grid-template-columns: 1fr; }

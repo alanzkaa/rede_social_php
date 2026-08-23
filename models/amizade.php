@@ -114,7 +114,7 @@ function listarSolicitacoesPendentes(int $usuarioId): array
 {
     $pdo = conectar();
 
-    $sql = "SELECT a.id AS solicitacao_id, u.id AS usuario_id, u.nome_completo, u.nome_usuario
+    $sql = "SELECT a.id AS solicitacao_id, u.id AS usuario_id, u.nome_completo, u.nome_usuario, u.foto_perfil
             FROM amizades a
             JOIN usuarios u ON u.id = a.usuario_id
             WHERE a.amigo_id = :usuario_id AND a.status = 'pendente'
