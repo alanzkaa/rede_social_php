@@ -4,7 +4,7 @@ Projeto de estudo: uma rede social construída **do zero, sem framework**, em PH
 
 ## Preview
 
-<img width="1893" height="903" alt="image" src="https://github.com/user-attachments/assets/6446dd43-54e7-4eab-9c5e-7a2828e6b90b" />
+<img width="1896" height="906" alt="image" src="https://github.com/user-attachments/assets/f00b4bb9-081b-4c57-8873-151141de6600" />
 
 ## Funcionalidades
 
