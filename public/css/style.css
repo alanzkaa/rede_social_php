@@ -135,6 +135,83 @@ a:hover { text-decoration: underline; }
 
 .orb-dropdown a:hover { background: rgba(30, 111, 217, 0.10); text-decoration: none; }
 
+/* ===== Sino de notificações ===== */
+.notif-menu { position: relative; }
+.notif-menu summary { list-style: none; cursor: pointer; }
+.notif-menu summary::-webkit-details-marker { display: none; }
+
+.notif-bell {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.35);
+}
+.notif-bell:hover { background: rgba(255, 255, 255, 0.25); }
+
+.notif-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 2px solid #fff;
+    background: linear-gradient(180deg, #E8837E, #C0392B);
+    color: #fff;
+    font-family: Tahoma, sans-serif;
+    font-size: 0.66rem;
+    font-weight: bold;
+}
+
+.notif-dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    width: 320px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: var(--vidro);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--vidro-borda);
+    border-radius: var(--raio);
+    box-shadow: var(--sombra-card);
+}
+
+.notif-dropdown__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--prata);
+}
+.notif-dropdown__header strong { font-family: Tahoma, sans-serif; font-size: 0.9rem; color: var(--azul-navy); }
+.notif-dropdown__header a { font-size: 0.76rem; }
+
+.notif-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 10px 14px;
+    border-bottom: 1px dashed var(--prata);
+    color: var(--texto);
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item:hover { background: rgba(30, 111, 217, 0.08); text-decoration: none; }
+.notif-item--nao-lida { background: rgba(30, 111, 217, 0.07); }
+
+.notif-item__texto { font-size: 0.85rem; line-height: 1.4; }
+.notif-item__data { display: block; font-size: 0.72rem; color: var(--texto-suave); margin-top: 2px; }
+
 /* ===== Layout de 3 colunas ===== */
 .layout {
     display: grid;

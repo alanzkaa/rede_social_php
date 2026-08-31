@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/postagem.php';
+require_once __DIR__ . '/notificacao.php';
 
 /**
  * Cria um comentário numa postagem.
@@ -23,7 +25,17 @@ function criarComentario(int $postagemId, int $usuarioId, string $conteudo): boo
     $stmt->bindValue(':usuario_id', $usuarioId, PDO::PARAM_INT);
     $stmt->bindValue(':conteudo', $conteudo);
 
-    return $stmt->execute();
+    $sucesso = $stmt->execute();
+
+    if ($sucesso) {
+        // Notifica o dono do post (a função já ignora se ele comentou no próprio post).
+        $donoId = buscarDonoDaPostagem($postagemId);
+        if ($donoId !== null) {
+            criarNotificacao($donoId, 'comentario', $usuarioId, $postagemId);
+        }
+    }
+
+    return $sucesso;
 }
 
 /**

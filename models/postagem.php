@@ -92,3 +92,21 @@ function excluirPostagem(int $postagemId, int $usuarioId): bool
 
     return $stmt->rowCount() > 0;
 }
+
+/**
+ * Devolve o ID do dono de uma postagem, ou null se ela não existir.
+ * Usada por curtida.php e comentario.php pra saber quem notificar.
+ */
+function buscarDonoDaPostagem(int $postagemId): ?int
+{
+    $pdo = conectar();
+
+    $sql = "SELECT usuario_id FROM postagens WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':id', $postagemId, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $linha = $stmt->fetch();
+
+    return $linha ? (int) $linha['usuario_id'] : null;
+}

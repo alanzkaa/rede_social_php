@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/notificacao.php';
 
 /**
  * Envia uma solicitação de amizade de $usuarioId para $amigoId.
@@ -39,7 +40,13 @@ function enviarSolicitacao(int $usuarioId, int $amigoId): bool|string
     $stmt->bindValue(':usuario_id', $usuarioId, PDO::PARAM_INT);
     $stmt->bindValue(':amigo_id', $amigoId, PDO::PARAM_INT);
 
-    return $stmt->execute();
+    $sucesso = $stmt->execute();
+
+    if ($sucesso) {
+        criarNotificacao($amigoId, 'solicitacao_amizade', $usuarioId);
+    }
+
+    return $sucesso;
 }
 
 /**
@@ -50,6 +57,20 @@ function enviarSolicitacao(int $usuarioId, int $amigoId): bool|string
 function aceitarSolicitacao(int $solicitacaoId, int $usuarioLogadoId): bool
 {
     $pdo = conectar();
+
+    // Descobre quem enviou a solicitação original, antes de aceitar,
+    // pra poder notificar essa pessoa depois.
+    $sql = "SELECT usuario_id FROM amizades
+            WHERE id = :id AND amigo_id = :usuario_logado_id AND status = 'pendente'";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':id', $solicitacaoId, PDO::PARAM_INT);
+    $stmt->bindValue(':usuario_logado_id', $usuarioLogadoId, PDO::PARAM_INT);
+    $stmt->execute();
+    $solicitacao = $stmt->fetch();
+
+    if (!$solicitacao) {
+        return false;
+    }
 
     $sql = "UPDATE amizades
             SET status = 'aceita'
@@ -62,7 +83,12 @@ function aceitarSolicitacao(int $solicitacaoId, int $usuarioLogadoId): bool
 
     // rowCount() diz quantas linhas foram alteradas. Se for 0, não achou
     // uma solicitação pendente pra esse usuário com esse ID.
-    return $stmt->rowCount() > 0;
+    if ($stmt->rowCount() > 0) {
+        criarNotificacao((int) $solicitacao['usuario_id'], 'amizade_aceita', $usuarioLogadoId);
+        return true;
+    }
+
+    return false;
 }
 
 /**

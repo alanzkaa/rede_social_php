@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/postagem.php';
+require_once __DIR__ . '/notificacao.php';
 
 /**
  * Alterna a curtida de um usuário numa postagem: se já curtiu, remove a curtida;
@@ -24,6 +26,12 @@ function alternarCurtida(int $usuarioId, int $postagemId): bool
     $stmt->bindValue(':usuario_id', $usuarioId, PDO::PARAM_INT);
     $stmt->bindValue(':postagem_id', $postagemId, PDO::PARAM_INT);
     $stmt->execute();
+
+    // Notifica o dono do post (a função já ignora se ele curtiu o próprio post).
+    $donoId = buscarDonoDaPostagem($postagemId);
+    if ($donoId !== null) {
+        criarNotificacao($donoId, 'curtida', $usuarioId, $postagemId);
+    }
 
     return true;
 }

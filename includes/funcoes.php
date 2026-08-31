@@ -19,3 +19,39 @@ function htmlFotoPerfil(?string $nomeArquivo, int $tamanho = 40, string $nome = 
 
     return "<span class=\"avatar avatar--initials\" style=\"{$estilo} font-size:{$fonte}px;\">{$inicial}</span>";
 }
+
+/**
+ * Devolve o texto legível de uma notificação, a partir do tipo e do nome
+ * de quem causou a ação.
+ */
+function textoNotificacao(string $tipo, string $atorNome): string
+{
+    $nome = htmlspecialchars($atorNome);
+
+    switch ($tipo) {
+        case 'curtida':
+            return "{$nome} curtiu sua postagem";
+        case 'comentario':
+            return "{$nome} comentou na sua postagem";
+        case 'solicitacao_amizade':
+            return "{$nome} te enviou uma solicitação de amizade";
+        case 'amizade_aceita':
+            return "{$nome} aceitou sua solicitação de amizade";
+        default:
+            return "{$nome} interagiu com você";
+    }
+}
+
+/**
+ * Devolve para onde a notificação deve levar ao ser clicada.
+ * Curtida/comentário levam pro próprio perfil (onde o post aparece);
+ * notificações de amizade levam pro perfil de quem causou a ação.
+ */
+function linkNotificacao(string $tipo, int $atorId): string
+{
+    if ($tipo === 'solicitacao_amizade' || $tipo === 'amizade_aceita') {
+        return 'perfil.php?id=' . $atorId;
+    }
+
+    return 'perfil.php';
+}
