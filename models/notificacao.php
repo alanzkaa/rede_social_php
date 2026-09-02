@@ -11,7 +11,32 @@ function criarNotificacao(int $usuarioId, string $tipo, int $atorId, ?int $posta
         return;
     }
 
+    // Cada tipo de notificação tem uma coluna de preferência correspondente
+    // na tabela usuarios. Só os tipos aqui listados são checados; qualquer
+    // tipo novo que não estiver no mapa é sempre criado.
+    $colunasPreferencia = [
+        'curtida'              => 'notif_curtida',
+        'comentario'           => 'notif_comentario',
+        'solicitacao_amizade'  => 'notif_solicitacao_amizade',
+        'amizade_aceita'       => 'notif_amizade_aceita',
+    ];
+
     $pdo = conectar();
+
+    if (isset($colunasPreferencia[$tipo])) {
+        $coluna = $colunasPreferencia[$tipo];
+
+        $sql = "SELECT {$coluna} AS preferencia FROM usuarios WHERE id = :usuario_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':usuario_id', $usuarioId, PDO::PARAM_INT);
+        $stmt->execute();
+        $linha = $stmt->fetch();
+
+        // Se o usuário desligou esse tipo de notificação, não cria nada.
+        if ($linha && (int) $linha['preferencia'] === 0) {
+            return;
+        }
+    }
 
     $sql = "INSERT INTO notificacoes (usuario_id, tipo, ator_id, postagem_id)
             VALUES (:usuario_id, :tipo, :ator_id, :postagem_id)";

@@ -51,6 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="auth-card__brand">☁ BlueSpace</div>
         <h1>Entrar</h1>
 
+        <?php if (($_GET['conta_excluida'] ?? '') === '1'): ?>
+            <p class="alert-info">Sua conta foi excluída com sucesso.</p>
+        <?php endif; ?>
+
         <?php if ($erro): ?>
             <p class="alert-error"><?= htmlspecialchars($erro) ?></p>
         <?php endif; ?>

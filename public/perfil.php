@@ -43,13 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($acao === 'curtir') {
         $postagemId = (int) ($_POST['postagem_id'] ?? 0);
         $statusAtual = $ehProprioPerfil ? 'amigos' : verificarStatusAmizade($usuarioLogadoId, $idVisualizado)['status'];
-        if ($ehProprioPerfil || $statusAtual === 'amigos') {
+        $podeInteragir = $ehProprioPerfil || $statusAtual === 'amigos' || $usuario['privacidade_postagens'] === 'publico';
+        if ($podeInteragir) {
             alternarCurtida($usuarioLogadoId, $postagemId);
         }
     } elseif ($acao === 'comentar') {
         $postagemId = (int) ($_POST['postagem_id'] ?? 0);
         $statusAtual = $ehProprioPerfil ? 'amigos' : verificarStatusAmizade($usuarioLogadoId, $idVisualizado)['status'];
-        if ($ehProprioPerfil || $statusAtual === 'amigos') {
+        $podeInteragir = $ehProprioPerfil || $statusAtual === 'amigos' || $usuario['privacidade_postagens'] === 'publico';
+        if ($podeInteragir) {
             $conteudoComentario = $_POST['conteudo_comentario'] ?? '';
             criarComentario($postagemId, $usuarioLogadoId, $conteudoComentario);
         }
@@ -67,8 +69,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $statusAmizade = $ehProprioPerfil ? null : verificarStatusAmizade($usuarioLogadoId, $idVisualizado);
 
-// Só mostra as postagens se for o próprio perfil, ou se os dois forem amigos.
-$podeVerPostagens = $ehProprioPerfil || ($statusAmizade['status'] === 'amigos');
+// Mostra as postagens se: for o próprio perfil, os dois forem amigos,
+// ou o dono do perfil tiver marcado as postagens como públicas.
+$podeVerPostagens = $ehProprioPerfil
+    || ($statusAmizade['status'] === 'amigos')
+    || ($usuario['privacidade_postagens'] === 'publico');
 $posts = $podeVerPostagens ? listarPostagensDoUsuario($idVisualizado) : [];
 
 // Dados do usuário logado, pra montar a navbar/sidebar (que sempre mostram

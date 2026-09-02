@@ -14,6 +14,21 @@ function enviarSolicitacao(int $usuarioId, int $amigoId): bool|string
 
     $pdo = conectar();
 
+    // Confere se o destinatário está aceitando solicitações de amizade.
+    $sql = "SELECT aceita_solicitacoes FROM usuarios WHERE id = :amigo_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':amigo_id', $amigoId, PDO::PARAM_INT);
+    $stmt->execute();
+    $destinatario = $stmt->fetch();
+
+    if (!$destinatario) {
+        return 'Usuário não encontrado.';
+    }
+
+    if ((int) $destinatario['aceita_solicitacoes'] === 0) {
+        return 'Este usuário não está aceitando solicitações de amizade no momento.';
+    }
+
     // Confere se já existe alguma relação entre os dois, em qualquer sentido.
     $sql = "SELECT id, usuario_id, status FROM amizades
             WHERE (usuario_id = :usuario_id AND amigo_id = :amigo_id)

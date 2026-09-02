@@ -394,6 +394,36 @@ a:hover { text-decoration: underline; }
 }
 .btn-link-danger:hover { text-decoration: underline; }
 
+.btn--danger {
+    background: none;
+    color: #B24444;
+    border: 1px solid #B24444;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-family: Tahoma, sans-serif;
+    font-weight: bold;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+.btn--danger:hover { background: rgba(178, 68, 68, 0.08); }
+
+/* ===== Campos de marcação (checkbox / radio) ===== */
+.campo-checkbox,
+.campo-radio {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.campo-checkbox input,
+.campo-radio input { width: 16px; height: 16px; accent-color: var(--azul-primario); }
+.campo-checkbox label,
+.campo-radio label { font-family: "Trebuchet MS", sans-serif; font-size: 0.9rem; color: var(--texto); }
+
+/* ===== Seção de perigo (excluir conta) ===== */
+.card--perigo { border-color: #F3B4B4; }
+.card--perigo .section-title { color: #8A2020; }
+
 /* ===== Autenticação (login / cadastro) ===== */
 .auth-page {
     min-height: 100vh;

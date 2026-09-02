@@ -61,7 +61,9 @@ function buscarUsuarioPorId(int $id): ?array
 {
     $pdo = conectar();
 
-    $sql = "SELECT id, nome_completo, email, nome_usuario, foto_perfil, data_nascimento, data_cadastro
+    $sql = "SELECT id, nome_completo, email, nome_usuario, foto_perfil, data_nascimento, data_cadastro,
+                   privacidade_postagens, aceita_solicitacoes,
+                   notif_curtida, notif_comentario, notif_solicitacao_amizade, notif_amizade_aceita
             FROM usuarios WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);
@@ -108,6 +110,113 @@ function atualizarPerfil(int $id, string $nomeCompleto, ?string $nomeUsuario, ?s
     return $stmt->execute();
 }
 
+/**
+ * Troca a senha de um usuário, exigindo a senha atual como confirmação.
+ * Retorna true em caso de sucesso, ou uma string com mensagem de erro.
+ */
+function alterarSenha(int $usuarioId, string $senhaAtual, string $senhaNova): bool|string
+{
+    $pdo = conectar();
+
+    $sql = "SELECT senha FROM usuarios WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':id', $usuarioId, PDO::PARAM_INT);
+    $stmt->execute();
+    $usuario = $stmt->fetch();
+
+    if (!$usuario || !password_verify($senhaAtual, $usuario['senha'])) {
+        return 'Senha atual incorreta.';
+    }
+
+    if (strlen($senhaNova) < 6) {
+        return 'A nova senha precisa ter pelo menos 6 caracteres.';
+    }
+
+    $sql = "UPDATE usuarios SET senha = :senha WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':senha', password_hash($senhaNova, PASSWORD_DEFAULT));
+    $stmt->bindValue(':id', $usuarioId, PDO::PARAM_INT);
+
+    return $stmt->execute();
+}
+
+/**
+ * Atualiza as preferências de privacidade do usuário.
+ */
+function atualizarPrivacidade(int $usuarioId, string $privacidadePostagens, bool $aceitaSolicitacoes): bool
+{
+    $pdo = conectar();
+
+    $sql = "UPDATE usuarios
+            SET privacidade_postagens = :privacidade, aceita_solicitacoes = :aceita
+            WHERE id = :id";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':privacidade', $privacidadePostagens);
+    $stmt->bindValue(':aceita', $aceitaSolicitacoes ? 1 : 0, PDO::PARAM_INT);
+    $stmt->bindValue(':id', $usuarioId, PDO::PARAM_INT);
+
+    return $stmt->execute();
+}
+
+/**
+ * Atualiza as preferências de notificação do usuário (um booleano por tipo).
+ */
+function atualizarPreferenciasNotificacao(int $usuarioId, bool $curtida, bool $comentario, bool $solicitacaoAmizade, bool $amizadeAceita): bool
+{
+    $pdo = conectar();
+
+    $sql = "UPDATE usuarios
+            SET notif_curtida = :curtida,
+                notif_comentario = :comentario,
+                notif_solicitacao_amizade = :solicitacao,
+                notif_amizade_aceita = :aceita
+            WHERE id = :id";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':curtida', $curtida ? 1 : 0, PDO::PARAM_INT);
+    $stmt->bindValue(':comentario', $comentario ? 1 : 0, PDO::PARAM_INT);
+    $stmt->bindValue(':solicitacao', $solicitacaoAmizade ? 1 : 0, PDO::PARAM_INT);
+    $stmt->bindValue(':aceita', $amizadeAceita ? 1 : 0, PDO::PARAM_INT);
+    $stmt->bindValue(':id', $usuarioId, PDO::PARAM_INT);
+
+    return $stmt->execute();
+}
+
+/**
+ * Exclui permanentemente a conta de um usuário, exigindo a senha como confirmação.
+ * As tabelas relacionadas (posts, curtidas, comentários, amizades, notificações)
+ * são apagadas automaticamente pelas foreign keys com ON DELETE CASCADE.
+ * Retorna true em caso de sucesso, ou uma string com mensagem de erro.
+ */
+function excluirConta(int $usuarioId, string $senha): bool|string
+{
+    $pdo = conectar();
+
+    $sql = "SELECT senha, foto_perfil FROM usuarios WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':id', $usuarioId, PDO::PARAM_INT);
+    $stmt->execute();
+    $usuario = $stmt->fetch();
+
+    if (!$usuario || !password_verify($senha, $usuario['senha'])) {
+        return 'Senha incorreta.';
+    }
+
+    // Remove a foto de perfil do disco antes de apagar o registro do banco.
+    if ($usuario['foto_perfil']) {
+        $caminho = __DIR__ . '/../public/uploads/' . $usuario['foto_perfil'];
+        if (file_exists($caminho)) {
+            unlink($caminho);
+        }
+    }
+
+    $sql = "DELETE FROM usuarios WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':id', $usuarioId, PDO::PARAM_INT);
+
+    return $stmt->execute();
+}
 /**
  * Busca usuários pelo nome ou nome de usuário (para adicionar como amigo).
  * Exclui o próprio usuário logado do resultado.
