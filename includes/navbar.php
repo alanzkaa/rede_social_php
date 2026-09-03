@@ -18,6 +18,7 @@ $naoLidas = contarNaoLidas($usuarioLogado['id']);
 
     <nav class="navbar__nav">
         <a href="feed.php" class="<?= $paginaAtual === 'feed' ? 'is-active' : '' ?>">Início</a>
+        <a href="comunidade.php" class="<?= $paginaAtual === 'comunidade' ? 'is-active' : '' ?>">Comunidade</a>
         <a href="amigos.php" class="<?= $paginaAtual === 'amigos' ? 'is-active' : '' ?>">Amigos</a>
     </nav>
 

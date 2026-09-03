@@ -136,7 +136,7 @@ $paginaAtual = '';
 
                     <div class="campo-checkbox" style="margin-top:16px;">
                         <input type="checkbox" id="aceita_solicitacoes" name="aceita_solicitacoes" value="1" <?= $usuario['aceita_solicitacoes'] ? 'checked' : '' ?>>
-                        <label for="aceita_solicitacoes">Aceitar solicitações de amizade</label>
+                        <label for="aceita_solicitacoes">Receber solicitações de amizade</label>
                     </div>
 
                     <button type="submit" class="btn btn--primary btn--small" style="margin-top:6px;">Salvar privacidade</button>

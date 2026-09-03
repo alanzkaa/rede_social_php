@@ -74,7 +74,13 @@ $statusAmizade = $ehProprioPerfil ? null : verificarStatusAmizade($usuarioLogado
 $podeVerPostagens = $ehProprioPerfil
     || ($statusAmizade['status'] === 'amigos')
     || ($usuario['privacidade_postagens'] === 'publico');
-$posts = $podeVerPostagens ? listarPostagensDoUsuario($idVisualizado) : [];
+// Posts "comunidade" são públicos por natureza — sempre aparecem. Posts
+// "amigos" só aparecem se for o próprio perfil, amigos, ou o dono tiver
+// marcado o perfil como público nas configurações.
+$todosPosts = listarPostagensDoUsuario($idVisualizado);
+$posts = array_values(array_filter($todosPosts, function ($post) use ($podeVerPostagens) {
+    return $post['visibilidade'] === 'comunidade' || $podeVerPostagens;
+}));
 
 // Dados do usuário logado, pra montar a navbar/sidebar (que sempre mostram
 // o PRÓPRIO usuário, mesmo quando a página exibe o perfil de outra pessoa).
@@ -157,17 +163,23 @@ $paginaAtual = '';
 
             <h2 class="section-title"><?= $ehProprioPerfil ? 'Minhas postagens' : 'Postagens' ?></h2>
 
-            <?php if (!$podeVerPostagens): ?>
+            <?php if (empty($posts) && !$podeVerPostagens): ?>
                 <div class="card empty-state">Adicione essa pessoa como amiga para ver as postagens dela.</div>
             <?php elseif (empty($posts)): ?>
                 <div class="card empty-state">Nenhuma postagem ainda.</div>
             <?php else: ?>
+                <?php if (!$podeVerPostagens): ?>
+                    <p class="texto-suave">Mostrando só as postagens públicas — adicione essa pessoa como amiga para ver o restante.</p>
+                <?php endif; ?>
                 <?php foreach ($posts as $post): ?>
                     <article class="card post">
 
                         <div class="post__header">
                             <?= htmlFotoPerfil($usuario['foto_perfil'], 36, $usuario['nome_completo']) ?>
                             <time><?= date('d/m/Y H:i', strtotime($post['data_criacao'])) ?></time>
+                            <?php if ($post['visibilidade'] === 'comunidade'): ?>
+                                <span class="post__badge">Comunidade</span>
+                            <?php endif; ?>
                         </div>
 
                         <div class="post__body">
