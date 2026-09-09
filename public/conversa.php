@@ -74,8 +74,11 @@ $paginaAtual = 'conversa';
 
             <section class="card">
                 <div class="chat-header">
-                    <?= htmlFotoPerfil($outro['foto_perfil'], 40, $outro['nome_completo']) ?>
-                    <a href="perfil.php?id=<?= $outroId ?>"><strong><?= htmlspecialchars($outro['nome_completo']) ?></strong></a>
+                    <?= htmlAvatarComStatus(htmlFotoPerfil($outro['foto_perfil'], 40, $outro['nome_completo']), $outro['ultima_atividade']) ?>
+                    <div>
+                        <a href="perfil.php?id=<?= $outroId ?>"><strong><?= htmlspecialchars($outro['nome_completo']) ?></strong></a>
+                        <div class="texto-suave" style="font-size:0.78rem;"><?= textoUltimaAtividade($outro['ultima_atividade']) ?></div>
+                    </div>
                 </div>
 
                 <div class="chat-thread">

@@ -110,7 +110,11 @@ $paginaAtual = '';
             <?php endif; ?>
 
             <section class="card card--padded profile-header">
-                <?= htmlFotoPerfil($usuario['foto_perfil'], 96, $usuario['nome_completo']) ?>
+                <?php if ($ehProprioPerfil): ?>
+                    <?= htmlFotoPerfil($usuario['foto_perfil'], 96, $usuario['nome_completo']) ?>
+                <?php else: ?>
+                    <?= htmlAvatarComStatus(htmlFotoPerfil($usuario['foto_perfil'], 96, $usuario['nome_completo']), $usuario['ultima_atividade']) ?>
+                <?php endif; ?>
 
                 <div class="profile-header__info">
                     <h1><?= $ehProprioPerfil ? 'Meu perfil' : htmlspecialchars($usuario['nome_completo']) ?></h1>
@@ -118,6 +122,8 @@ $paginaAtual = '';
                     <div class="profile-header__meta">
                         <?php if ($ehProprioPerfil): ?>
                             <span><?= htmlspecialchars($usuario['email']) ?></span>
+                        <?php else: ?>
+                            <span><?= textoUltimaAtividade($usuario['ultima_atividade']) ?></span>
                         <?php endif; ?>
                         <span>
                             <?= $usuario['nome_usuario'] ? '@' . htmlspecialchars($usuario['nome_usuario']) : 'sem nome de usuário' ?>

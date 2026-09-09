@@ -148,7 +148,7 @@ $paginaAtual = 'amigos';
                     <ul class="people-list">
                         <?php foreach ($amigos as $amigo): ?>
                             <li class="people-item">
-                                <?= htmlFotoPerfil($amigo['foto_perfil'], 40, $amigo['nome_completo']) ?>
+                                <?= htmlAvatarComStatus(htmlFotoPerfil($amigo['foto_perfil'], 40, $amigo['nome_completo']), $amigo['ultima_atividade']) ?>
                                 <span class="people-item__name">
                                     <a href="perfil.php?id=<?= (int) $amigo['id'] ?>"><?= htmlspecialchars($amigo['nome_completo']) ?></a>
                                     <?php if ($amigo['nome_usuario']): ?>

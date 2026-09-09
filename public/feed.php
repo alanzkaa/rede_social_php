@@ -175,7 +175,7 @@ $paginaAtual = 'feed';
                 <ul class="friend-list">
                     <?php foreach ($amigosPreview as $amigo): ?>
                         <li>
-                            <?= htmlFotoPerfil($amigo['foto_perfil'], 32, $amigo['nome_completo']) ?>
+                            <?= htmlAvatarComStatus(htmlFotoPerfil($amigo['foto_perfil'], 32, $amigo['nome_completo']), $amigo['ultima_atividade']) ?>
                             <a href="perfil.php?id=<?= (int) $amigo['id'] ?>"><?= htmlspecialchars($amigo['nome_completo']) ?></a>
                         </li>
                     <?php endforeach; ?>

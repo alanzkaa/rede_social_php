@@ -141,7 +141,7 @@ function listarConversas(int $usuarioId): array
     $pdo = conectar();
 
     $sql = "SELECT c.id AS conversa_id,
-                   u.id AS outro_id, u.nome_completo, u.nome_usuario, u.foto_perfil,
+                   u.id AS outro_id, u.nome_completo, u.nome_usuario, u.foto_perfil, u.ultima_atividade,
                    (SELECT conteudo FROM mensagens m WHERE m.conversa_id = c.id ORDER BY m.data_envio DESC LIMIT 1) AS ultima_mensagem,
                    (SELECT data_envio FROM mensagens m WHERE m.conversa_id = c.id ORDER BY m.data_envio DESC LIMIT 1) AS ultima_data,
                    (SELECT COUNT(*) FROM mensagens m WHERE m.conversa_id = c.id AND m.remetente_id != :usuario_id1 AND m.lida = 0) AS nao_lidas

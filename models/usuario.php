@@ -63,7 +63,8 @@ function buscarUsuarioPorId(int $id): ?array
 
     $sql = "SELECT id, nome_completo, email, nome_usuario, foto_perfil, data_nascimento, data_cadastro,
                    privacidade_postagens, aceita_solicitacoes,
-                   notif_curtida, notif_comentario, notif_solicitacao_amizade, notif_amizade_aceita, notif_mensagem
+                   notif_curtida, notif_comentario, notif_solicitacao_amizade, notif_amizade_aceita, notif_mensagem,
+                   ultima_atividade
             FROM usuarios WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);
@@ -290,4 +291,18 @@ function atualizarFotoPerfil(int $usuarioId, array $arquivo): bool|string
     $stmt->bindValue(':id', $usuarioId, PDO::PARAM_INT);
 
     return $stmt->execute();
+}
+
+/**
+ * Atualiza o timestamp de última atividade do usuário para agora.
+ * Chamada automaticamente pelo exigirLogin() a cada página visitada.
+ */
+function atualizarUltimaAtividade(int $usuarioId): void
+{
+    $pdo = conectar();
+
+    $sql = "UPDATE usuarios SET ultima_atividade = NOW() WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':id', $usuarioId, PDO::PARAM_INT);
+    $stmt->execute();
 }

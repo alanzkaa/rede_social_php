@@ -61,3 +61,57 @@ function linkNotificacao(string $tipo, int $atorId): string
 
     return 'perfil.php';
 }
+
+/**
+ * Confere se um usuário está "online" — teve atividade nos últimos
+ * $limiteMinutos minutos. Sem WebSocket, essa é a forma realista de
+ * aproximar presença: baseada na última vez que a pessoa carregou uma página.
+ */
+function usuarioEstaOnline(?string $ultimaAtividade, int $limiteMinutos = 5): bool
+{
+    if ($ultimaAtividade === null) {
+        return false;
+    }
+
+    $minutosPassados = (time() - strtotime($ultimaAtividade)) / 60;
+
+    return $minutosPassados <= $limiteMinutos;
+}
+
+/**
+ * Devolve o HTML de uma bolinha de status (verde = online, cinza = offline),
+ * pra sobrepor no canto do avatar.
+ */
+function htmlStatusOnline(?string $ultimaAtividade): string
+{
+    $classe = usuarioEstaOnline($ultimaAtividade) ? 'status-dot--online' : 'status-dot--offline';
+
+    return "<span class=\"status-dot {$classe}\"></span>";
+}
+
+/**
+ * Devolve o texto "Online agora" ou "Visto por último em dd/mm/aaaa hh:mm",
+ * pra exibir junto do nome em perfis e conversas.
+ */
+function textoUltimaAtividade(?string $ultimaAtividade): string
+{
+    if ($ultimaAtividade === null) {
+        return 'Ainda não esteve online';
+    }
+
+    if (usuarioEstaOnline($ultimaAtividade)) {
+        return 'Online agora';
+    }
+
+    return 'Visto por último em ' . date('d/m/Y H:i', strtotime($ultimaAtividade));
+}
+
+/**
+ * Envolve um avatar (já pronto, vindo de htmlFotoPerfil) com a bolinha de
+ * status no canto — os dois precisam ficar dentro do mesmo "wrapper"
+ * posicionado, por isso essa função existe em vez de só concatenar os dois.
+ */
+function htmlAvatarComStatus(string $htmlAvatar, ?string $ultimaAtividade): string
+{
+    return '<span class="avatar-wrapper">' . $htmlAvatar . htmlStatusOnline($ultimaAtividade) . '</span>';
+}

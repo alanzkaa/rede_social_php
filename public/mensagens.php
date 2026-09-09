@@ -41,7 +41,7 @@ $paginaAtual = 'mensagens';
                         <?php foreach ($conversas as $c): ?>
                             <li>
                                 <a href="conversa.php?com=<?= (int) $c['outro_id'] ?>" class="conversa-item">
-                                    <?= htmlFotoPerfil($c['foto_perfil'], 44, $c['nome_completo']) ?>
+                                    <?= htmlAvatarComStatus(htmlFotoPerfil($c['foto_perfil'], 44, $c['nome_completo']), $c['ultima_atividade']) ?>
                                     <div class="conversa-item__info">
                                         <div class="conversa-item__nome"><?= htmlspecialchars($c['nome_completo']) ?></div>
                                         <p class="conversa-item__snippet"><?= htmlspecialchars($c['ultima_mensagem'] ?? '') ?></p>

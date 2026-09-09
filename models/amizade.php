@@ -132,7 +132,7 @@ function listarAmigos(int $usuarioId): array
 {
     $pdo = conectar();
 
-    $sql = "SELECT u.id, u.nome_completo, u.nome_usuario, u.foto_perfil
+    $sql = "SELECT u.id, u.nome_completo, u.nome_usuario, u.foto_perfil, u.ultima_atividade
             FROM amizades a
             JOIN usuarios u ON u.id = IF(a.usuario_id = :usuario_id, a.amigo_id, a.usuario_id)
             WHERE (a.usuario_id = :usuario_id2 OR a.amigo_id = :usuario_id3)
