@@ -15,6 +15,7 @@ $usuarioLogado = $usuarioLogado ?? ['foto_perfil' => null, 'nome_completo' => ''
         <a href="perfil_editar.php">Editar perfil</a>
         <a href="comunidade.php">Comunidade</a>
         <a href="amigos.php">Amigos</a>
+        <a href="mensagens.php">Mensagens</a>
         <a href="configuracoes.php">Configurações</a>
         <a href="logout.php">Sair</a>
     </nav>

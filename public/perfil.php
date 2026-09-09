@@ -152,6 +152,7 @@ $paginaAtual = '';
                             </form>
                         <?php elseif ($statusAmizade['status'] === 'amigos'): ?>
                             <span class="texto-suave">Vocês são amigos.</span>
+                            <a href="conversa.php?com=<?= $idVisualizado ?>" class="btn btn--primary btn--small">Mensagem</a>
                             <form method="POST" action="perfil.php?id=<?= $idVisualizado ?>" onsubmit="return confirm('Desfazer amizade com essa pessoa?');">
                                 <input type="hidden" name="acao" value="desfazer_amizade">
                                 <button type="submit" class="btn-link-danger">Desfazer amizade</button>

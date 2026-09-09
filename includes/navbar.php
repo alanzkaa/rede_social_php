@@ -6,12 +6,14 @@
  * - $paginaAtual    : 'feed' ou 'amigos', opcional, só pra destacar o link ativo
  */
 require_once __DIR__ . '/../models/notificacao.php';
+require_once __DIR__ . '/../models/mensagem.php';
 
 $paginaAtual = $paginaAtual ?? '';
 $usuarioLogado = $usuarioLogado ?? ['id' => 0, 'foto_perfil' => null, 'nome_completo' => ''];
 
 $notificacoes = listarNotificacoes($usuarioLogado['id']);
 $naoLidas = contarNaoLidas($usuarioLogado['id']);
+$mensagensNaoLidas = contarMensagensNaoLidas($usuarioLogado['id']);
 ?>
 <header class="navbar">
     <span class="navbar__brand">☁ BlueSpace</span>
@@ -21,6 +23,13 @@ $naoLidas = contarNaoLidas($usuarioLogado['id']);
         <a href="comunidade.php" class="<?= $paginaAtual === 'comunidade' ? 'is-active' : '' ?>">Comunidade</a>
         <a href="amigos.php" class="<?= $paginaAtual === 'amigos' ? 'is-active' : '' ?>">Amigos</a>
     </nav>
+
+    <a href="mensagens.php" class="notif-bell<?= in_array($paginaAtual, ['mensagens', 'conversa']) ? ' is-active' : '' ?>">
+        ✉
+        <?php if ($mensagensNaoLidas > 0): ?>
+            <span class="notif-badge"><?= $mensagensNaoLidas > 9 ? '9+' : $mensagensNaoLidas ?></span>
+        <?php endif; ?>
+    </a>
 
     <details class="notif-menu">
         <summary class="notif-bell">

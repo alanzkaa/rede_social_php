@@ -37,6 +37,8 @@ function textoNotificacao(string $tipo, string $atorNome): string
             return "{$nome} te enviou uma solicitação de amizade";
         case 'amizade_aceita':
             return "{$nome} aceitou sua solicitação de amizade";
+        case 'mensagem':
+            return "{$nome} te enviou uma mensagem";
         default:
             return "{$nome} interagiu com você";
     }
@@ -45,12 +47,16 @@ function textoNotificacao(string $tipo, string $atorNome): string
 /**
  * Devolve para onde a notificação deve levar ao ser clicada.
  * Curtida/comentário levam pro próprio perfil (onde o post aparece);
- * notificações de amizade levam pro perfil de quem causou a ação.
+ * notificações de amizade e mensagem levam pro perfil/conversa com quem causou a ação.
  */
 function linkNotificacao(string $tipo, int $atorId): string
 {
     if ($tipo === 'solicitacao_amizade' || $tipo === 'amizade_aceita') {
         return 'perfil.php?id=' . $atorId;
+    }
+
+    if ($tipo === 'mensagem') {
+        return 'conversa.php?com=' . $atorId;
     }
 
     return 'perfil.php';

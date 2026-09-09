@@ -45,7 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             isset($_POST['notif_curtida']),
             isset($_POST['notif_comentario']),
             isset($_POST['notif_solicitacao_amizade']),
-            isset($_POST['notif_amizade_aceita'])
+            isset($_POST['notif_amizade_aceita']),
+            isset($_POST['notif_mensagem'])
         );
         $sucesso = 'Preferências de notificação atualizadas!';
         $usuario = buscarUsuarioPorId($usuarioId);
@@ -164,6 +165,10 @@ $paginaAtual = '';
                     <div class="campo-checkbox">
                         <input type="checkbox" id="notif_amizade_aceita" name="notif_amizade_aceita" value="1" <?= $usuario['notif_amizade_aceita'] ? 'checked' : '' ?>>
                         <label for="notif_amizade_aceita">Quando alguém aceitar minha solicitação de amizade</label>
+                    </div>
+                    <div class="campo-checkbox">
+                        <input type="checkbox" id="notif_mensagem" name="notif_mensagem" value="1" <?= $usuario['notif_mensagem'] ? 'checked' : '' ?>>
+                        <label for="notif_mensagem">Quando eu receber uma mensagem</label>
                     </div>
 
                     <button type="submit" class="btn btn--primary btn--small" style="margin-top:6px;">Salvar notificações</button>

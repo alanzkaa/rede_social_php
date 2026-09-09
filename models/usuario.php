@@ -63,7 +63,7 @@ function buscarUsuarioPorId(int $id): ?array
 
     $sql = "SELECT id, nome_completo, email, nome_usuario, foto_perfil, data_nascimento, data_cadastro,
                    privacidade_postagens, aceita_solicitacoes,
-                   notif_curtida, notif_comentario, notif_solicitacao_amizade, notif_amizade_aceita
+                   notif_curtida, notif_comentario, notif_solicitacao_amizade, notif_amizade_aceita, notif_mensagem
             FROM usuarios WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);
@@ -162,7 +162,7 @@ function atualizarPrivacidade(int $usuarioId, string $privacidadePostagens, bool
 /**
  * Atualiza as preferências de notificação do usuário (um booleano por tipo).
  */
-function atualizarPreferenciasNotificacao(int $usuarioId, bool $curtida, bool $comentario, bool $solicitacaoAmizade, bool $amizadeAceita): bool
+function atualizarPreferenciasNotificacao(int $usuarioId, bool $curtida, bool $comentario, bool $solicitacaoAmizade, bool $amizadeAceita, bool $mensagem): bool
 {
     $pdo = conectar();
 
@@ -170,7 +170,8 @@ function atualizarPreferenciasNotificacao(int $usuarioId, bool $curtida, bool $c
             SET notif_curtida = :curtida,
                 notif_comentario = :comentario,
                 notif_solicitacao_amizade = :solicitacao,
-                notif_amizade_aceita = :aceita
+                notif_amizade_aceita = :aceita,
+                notif_mensagem = :mensagem
             WHERE id = :id";
 
     $stmt = $pdo->prepare($sql);
@@ -178,6 +179,7 @@ function atualizarPreferenciasNotificacao(int $usuarioId, bool $curtida, bool $c
     $stmt->bindValue(':comentario', $comentario ? 1 : 0, PDO::PARAM_INT);
     $stmt->bindValue(':solicitacao', $solicitacaoAmizade ? 1 : 0, PDO::PARAM_INT);
     $stmt->bindValue(':aceita', $amizadeAceita ? 1 : 0, PDO::PARAM_INT);
+    $stmt->bindValue(':mensagem', $mensagem ? 1 : 0, PDO::PARAM_INT);
     $stmt->bindValue(':id', $usuarioId, PDO::PARAM_INT);
 
     return $stmt->execute();
