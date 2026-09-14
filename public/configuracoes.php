@@ -70,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $usuarioLogado = $usuario;
 $paginaAtual = '';
+$secaoAberta = $_POST['acao'] ?? 'senha';
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -89,16 +90,13 @@ $paginaAtual = '';
 
         <main class="feed">
 
-            <?php if ($sucesso): ?>
-                <p class="alert-success"><?= htmlspecialchars($sucesso) ?></p>
-            <?php endif; ?>
-
             <?php if ($erro): ?>
                 <p class="alert-error"><?= htmlspecialchars($erro) ?></p>
             <?php endif; ?>
 
-            <section class="card card--padded">
-                <h2 class="section-title">Segurança</h2>
+            <details class="card accordion"<?= $secaoAberta === 'senha' ? ' open' : '' ?>>
+                <summary class="section-title">Segurança</summary>
+                <div class="accordion__body">
 
                 <form method="POST" action="configuracoes.php">
                     <input type="hidden" name="acao" value="senha">
@@ -120,10 +118,12 @@ $paginaAtual = '';
 
                     <button type="submit" class="btn btn--primary btn--small">Trocar senha</button>
                 </form>
-            </section>
+                </div>
+            </details>
 
-            <section class="card card--padded">
-                <h2 class="section-title">Privacidade</h2>
+            <details class="card accordion"<?= $secaoAberta === 'privacidade' ? ' open' : '' ?>>
+                <summary class="section-title">Privacidade</summary>
+                <div class="accordion__body">
 
                 <form method="POST" action="configuracoes.php">
                     <input type="hidden" name="acao" value="privacidade">
@@ -146,10 +146,12 @@ $paginaAtual = '';
 
                     <button type="submit" class="btn btn--primary btn--small" style="margin-top:6px;">Salvar privacidade</button>
                 </form>
-            </section>
+                </div>
+            </details>
 
-            <section class="card card--padded">
-                <h2 class="section-title">Notificações</h2>
+            <details class="card accordion"<?= $secaoAberta === 'notificacoes' ? ' open' : '' ?>>
+                <summary class="section-title">Notificações</summary>
+                <div class="accordion__body">
 
                 <form method="POST" action="configuracoes.php">
                     <input type="hidden" name="acao" value="notificacoes">
@@ -177,10 +179,12 @@ $paginaAtual = '';
 
                     <button type="submit" class="btn btn--primary btn--small" style="margin-top:6px;">Salvar notificações</button>
                 </form>
-            </section>
+                </div>
+            </details>
 
-            <section class="card card--padded">
-                <h2 class="section-title">Aparência</h2>
+            <details class="card accordion"<?= $secaoAberta === 'tema' ? ' open' : '' ?>>
+                <summary class="section-title">Aparência</summary>
+                <div class="accordion__body">
 
                 <form method="POST" action="configuracoes.php">
                     <input type="hidden" name="acao" value="tema">
@@ -196,10 +200,12 @@ $paginaAtual = '';
 
                     <button type="submit" class="btn btn--primary btn--small" style="margin-top:6px;">Salvar aparência</button>
                 </form>
-            </section>
+                </div>
+            </details>
 
-            <section class="card card--padded card--perigo">
-                <h2 class="section-title">Excluir Conta</h2>
+            <details class="card accordion card--perigo"<?= $secaoAberta === 'excluir_conta' ? ' open' : '' ?>>
+                <summary class="section-title">Excluir Conta</summary>
+                <div class="accordion__body">
                 <p class="texto-suave">Excluir sua conta é permanente. Todas as suas postagens, comentários, curtidas, amizades e notificações serão apagadas junto.</p>
 
                 <form method="POST" action="configuracoes.php" onsubmit="return confirm('Tem certeza que quer excluir sua conta? Essa ação não pode ser desfeita.');">
@@ -210,9 +216,10 @@ $paginaAtual = '';
                         <input type="password" id="senha_exclusao" name="senha_exclusao" required>
                     </div>
 
-                    <button type="submit" class="btn--danger">Excluir minha conta</button>
+                    <button type="submit" class="btn btn--primary btn--small">Excluir minha conta</button>
                 </form>
-            </section>
+                </div>
+            </details>
 
         </main>
 
