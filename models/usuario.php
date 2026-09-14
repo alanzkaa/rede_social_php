@@ -64,7 +64,7 @@ function buscarUsuarioPorId(int $id): ?array
     $sql = "SELECT id, nome_completo, email, nome_usuario, foto_perfil, data_nascimento, data_cadastro,
                    privacidade_postagens, aceita_solicitacoes,
                    notif_curtida, notif_comentario, notif_solicitacao_amizade, notif_amizade_aceita, notif_mensagem,
-                   ultima_atividade
+                   ultima_atividade, tema
             FROM usuarios WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);
@@ -181,6 +181,21 @@ function atualizarPreferenciasNotificacao(int $usuarioId, bool $curtida, bool $c
     $stmt->bindValue(':solicitacao', $solicitacaoAmizade ? 1 : 0, PDO::PARAM_INT);
     $stmt->bindValue(':aceita', $amizadeAceita ? 1 : 0, PDO::PARAM_INT);
     $stmt->bindValue(':mensagem', $mensagem ? 1 : 0, PDO::PARAM_INT);
+    $stmt->bindValue(':id', $usuarioId, PDO::PARAM_INT);
+
+    return $stmt->execute();
+}
+
+/**
+ * Atualiza o tema visual escolhido pelo usuário.
+ */
+function atualizarTema(int $usuarioId, string $tema): bool
+{
+    $tema = $tema === 'escuro' ? 'escuro' : 'claro';
+    $pdo = conectar();
+
+    $stmt = $pdo->prepare('UPDATE usuarios SET tema = :tema WHERE id = :id');
+    $stmt->bindValue(':tema', $tema);
     $stmt->bindValue(':id', $usuarioId, PDO::PARAM_INT);
 
     return $stmt->execute();

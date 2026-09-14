@@ -50,6 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
         $sucesso = 'Preferências de notificação atualizadas!';
         $usuario = buscarUsuarioPorId($usuarioId);
+    } elseif ($acao === 'tema') {
+        atualizarTema($usuarioId, $_POST['tema'] ?? 'claro');
+        $sucesso = 'Tema atualizado!';
+        $usuario = buscarUsuarioPorId($usuarioId);
     } elseif ($acao === 'excluir_conta') {
         $senha = $_POST['senha_exclusao'] ?? '';
         $resultado = excluirConta($usuarioId, $senha);
@@ -75,7 +79,7 @@ $paginaAtual = '';
     <title>BlueSpace · Configurações</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="<?= ($usuarioLogado['tema'] ?? 'claro') === 'escuro' ? 'tema-escuro' : '' ?>">
 
     <?php require __DIR__ . '/../includes/navbar.php'; ?>
 
@@ -172,6 +176,25 @@ $paginaAtual = '';
                     </div>
 
                     <button type="submit" class="btn btn--primary btn--small" style="margin-top:6px;">Salvar notificações</button>
+                </form>
+            </section>
+
+            <section class="card card--padded">
+                <h2 class="section-title">Aparência</h2>
+
+                <form method="POST" action="configuracoes.php">
+                    <input type="hidden" name="acao" value="tema">
+
+                    <div class="campo-radio">
+                        <input type="radio" id="tema_claro" name="tema" value="claro" <?= ($usuario['tema'] ?? 'claro') === 'claro' ? 'checked' : '' ?>>
+                        <label for="tema_claro">Modo claro</label>
+                    </div>
+                    <div class="campo-radio">
+                        <input type="radio" id="tema_escuro" name="tema" value="escuro" <?= ($usuario['tema'] ?? 'claro') === 'escuro' ? 'checked' : '' ?>>
+                        <label for="tema_escuro">Modo escuro</label>
+                    </div>
+
+                    <button type="submit" class="btn btn--primary btn--small" style="margin-top:6px;">Salvar aparência</button>
                 </form>
             </section>
 

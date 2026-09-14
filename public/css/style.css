@@ -426,6 +426,41 @@ a.notif-bell.is-active,
 
 .empty-state { padding: 30px 16px; text-align: center; color: var(--texto-suave); }
 
+/* ===== Tema escuro ===== */
+body.tema-escuro {
+    --azul-claro: #155fff;
+    --azul-primario: #155fff;
+    --azul-navy: #2372DE;
+    --prata: #526579;
+    --vidro: rgba(20, 31, 45, 0.82);
+    --vidro-borda: rgba(151, 181, 211, 0.35);
+    --fundo: #101923;
+    --texto: #E6EEF7;
+    --texto-suave: #B7C5D4;
+    --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.28);
+    --sombra-card: 0 4px 16px rgba(0, 0, 0, 0.35);
+    background: url('../images/fundo-escuro.jpg') center / cover fixed no-repeat;
+}
+
+body.tema-escuro input,
+body.tema-escuro textarea,
+body.tema-escuro select {
+    background: rgba(12, 20, 29, 0.8);
+    border-color: var(--prata);
+    color: var(--texto);
+}
+
+body.tema-escuro .chat-bubble--outro,
+body.tema-escuro .conversa-item,
+body.tema-escuro .conversa-item:hover {
+    background: rgba(38, 53, 70, 0.82);
+}
+
+body.tema-escuro .notif-item:hover,
+body.tema-escuro .sidebar__nav a:hover {
+    background: rgba(100, 181, 246, 0.16);
+}
+
 .alert-error {
     padding: 10px 14px;
     border: 1px solid #F3B4B4;

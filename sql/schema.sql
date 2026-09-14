@@ -15,7 +15,8 @@ CREATE TABLE usuarios (
     nome_usuario VARCHAR(50) UNIQUE,
     foto_perfil VARCHAR(255) NULL,
     data_nascimento DATE,
-    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    tema ENUM('claro', 'escuro') NOT NULL DEFAULT 'claro'
 );
 
 -- Amizades: relação entre dois usuários, com status de pendente/aceita.

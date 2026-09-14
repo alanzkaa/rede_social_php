@@ -18,7 +18,7 @@ $paginaAtual = 'sobre';
     <title>BlueSpace · Sobre</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="<?= ($usuarioLogado['tema'] ?? 'claro') === 'escuro' ? 'tema-escuro' : '' ?>">
 
     <?php require __DIR__ . '/../includes/navbar.php'; ?>
 
