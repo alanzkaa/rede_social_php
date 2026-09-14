@@ -500,6 +500,7 @@ body.tema-escuro .people-item .status-dot {
 /* ===== Avatares ===== */
 .avatar {
     display: inline-block;
+    flex: 0 0 auto;
     border-radius: 50%;
     border: 2px solid #fff;
     box-shadow: 0 1px 4px rgba(11, 61, 107, 0.25);
