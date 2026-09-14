@@ -16,24 +16,27 @@ $naoLidas = contarNaoLidas($usuarioLogado['id']);
 $mensagensNaoLidas = contarMensagensNaoLidas($usuarioLogado['id']);
 ?>
 <header class="navbar">
-    <span class="navbar__brand">☁ BlueSpace</span>
+    <span class="navbar__brand"><img src="images/bluespace.png" alt="" class="brand-logo">BlueSpace</span>
 
     <nav class="navbar__nav">
-        <a href="feed.php" class="<?= $paginaAtual === 'feed' ? 'is-active' : '' ?>">Início</a>
-        <a href="comunidade.php" class="<?= $paginaAtual === 'comunidade' ? 'is-active' : '' ?>">Comunidade</a>
-        <a href="amigos.php" class="<?= $paginaAtual === 'amigos' ? 'is-active' : '' ?>">Amigos</a>
+        <a href="feed.php" class="<?= $paginaAtual === 'feed' ? 'is-active' : '' ?>" data-tooltip="Início" aria-label="Início"><img class="nav-icon" src="images/inicio.png" alt="Início"></a>
+        <a href="comunidade.php" class="<?= $paginaAtual === 'comunidade' ? 'is-active' : '' ?>" data-tooltip="Comunidade" aria-label="Comunidade"><img class="nav-icon" src="images/comunidade.png" alt="Comunidade"></a>
+        <a href="amigos.php" class="<?= $paginaAtual === 'amigos' ? 'is-active' : '' ?>" data-tooltip="Amigos" aria-label="Amigos"><img class="nav-icon" src="images/amigos.png" alt="Amigos"></a>
+        <a href="mensagens.php" class="notif-bell<?= in_array($paginaAtual, ['mensagens', 'conversa']) ? ' is-active' : '' ?>" data-tooltip="Mensagens" aria-label="Mensagens">
+            <img class="nav-icon" src="images/mensagens.png" alt="Mensagens">
+            <?php if ($mensagensNaoLidas > 0): ?>
+                <span class="notif-badge"><?= $mensagensNaoLidas > 9 ? '9+' : $mensagensNaoLidas ?></span>
+            <?php endif; ?>
+        </a>
     </nav>
 
-    <a href="mensagens.php" class="notif-bell<?= in_array($paginaAtual, ['mensagens', 'conversa']) ? ' is-active' : '' ?>">
-        ✉
-        <?php if ($mensagensNaoLidas > 0): ?>
-            <span class="notif-badge"><?= $mensagensNaoLidas > 9 ? '9+' : $mensagensNaoLidas ?></span>
-        <?php endif; ?>
+    <a href="sobre.php" class="notif-bell<?= $paginaAtual === 'sobre' ? ' is-active' : '' ?>" data-tooltip="Informações" aria-label="Informações">
+        <img class="nav-icon" src="images/informacoes.png" alt="Informações">
     </a>
 
     <details class="notif-menu">
-        <summary class="notif-bell">
-            🔔
+        <summary class="notif-bell" data-tooltip="Notificações" aria-label="Notificações">
+            <img class="nav-icon" src="images/notificacoes.png" alt="Notificações">
             <?php if ($naoLidas > 0): ?>
                 <span class="notif-badge"><?= $naoLidas > 9 ? '9+' : $naoLidas ?></span>
             <?php endif; ?>

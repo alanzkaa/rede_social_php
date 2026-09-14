@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="auth-page">
 
     <div class="card auth-card">
-        <div class="auth-card__brand">☁ BlueSpace</div>
+        <div class="auth-card__brand"><img src="images/bluespace.png" alt="" class="brand-logo">BlueSpace</div>
 
         <?php if ($sucesso): ?>
             <h1>Conta criada!</h1>
