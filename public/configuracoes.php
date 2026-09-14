@@ -199,7 +199,7 @@ $paginaAtual = '';
             </section>
 
             <section class="card card--padded card--perigo">
-                <h2 class="section-title">Zona de perigo</h2>
+                <h2 class="section-title">Excluir Conta</h2>
                 <p class="texto-suave">Excluir sua conta é permanente. Todas as suas postagens, comentários, curtidas, amizades e notificações serão apagadas junto.</p>
 
                 <form method="POST" action="configuracoes.php" onsubmit="return confirm('Tem certeza que quer excluir sua conta? Essa ação não pode ser desfeita.');">
