@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $sucesso = 'Preferências de notificação atualizadas!';
         $usuario = buscarUsuarioPorId($usuarioId);
     } elseif ($acao === 'tema') {
-        atualizarTema($usuarioId, $_POST['tema'] ?? 'claro');
+        atualizarTema($usuarioId, $_POST['tema'] ?? 'claro', $_POST['fundo'] ?? 'imagem');
         $sucesso = 'Tema atualizado!';
         $usuario = buscarUsuarioPorId($usuarioId);
     } elseif ($acao === 'excluir_conta') {
@@ -80,7 +80,7 @@ $secaoAberta = $_POST['acao'] ?? 'senha';
     <title>BlueSpace · Configurações</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="<?= ($usuarioLogado['tema'] ?? 'claro') === 'escuro' ? 'tema-escuro' : '' ?>">
+<body class="<?= ($usuarioLogado['tema'] ?? 'claro') === 'escuro' ? 'tema-escuro ' : '' ?><?= ($usuarioLogado['fundo'] ?? 'imagem') === 'liso' ? 'fundo-liso' : '' ?>">
 
     <?php require __DIR__ . '/../includes/navbar.php'; ?>
 
@@ -196,6 +196,16 @@ $secaoAberta = $_POST['acao'] ?? 'senha';
                     <div class="campo-radio">
                         <input type="radio" id="tema_escuro" name="tema" value="escuro" <?= ($usuario['tema'] ?? 'claro') === 'escuro' ? 'checked' : '' ?>>
                         <label for="tema_escuro">Modo escuro</label>
+                    </div>
+
+                    <p class="texto-suave" style="margin-bottom:8px;">Fundo</p>
+                    <div class="campo-radio">
+                        <input type="radio" id="fundo_imagem" name="fundo" value="imagem" <?= ($usuario['fundo'] ?? 'imagem') === 'imagem' ? 'checked' : '' ?>>
+                        <label for="fundo_imagem">Usar imagem de fundo</label>
+                    </div>
+                    <div class="campo-radio">
+                        <input type="radio" id="fundo_liso" name="fundo" value="liso" <?= ($usuario['fundo'] ?? 'imagem') === 'liso' ? 'checked' : '' ?>>
+                        <label for="fundo_liso">Usar fundo liso</label>
                     </div>
 
                     <button type="submit" class="btn btn--primary btn--small" style="margin-top:6px;">Salvar aparência</button>

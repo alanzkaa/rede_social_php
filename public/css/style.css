@@ -442,6 +442,14 @@ body.tema-escuro {
     background: url('../images/fundo-escuro.jpg') center / cover fixed no-repeat;
 }
 
+body.fundo-liso {
+    background: #E3E8ED;
+}
+
+body.tema-escuro.fundo-liso {
+    background: #263543;
+}
+
 body.tema-escuro input,
 body.tema-escuro textarea,
 body.tema-escuro select {
@@ -592,7 +600,6 @@ body.tema-escuro .people-item .status-dot {
 .campo-radio label { font-family: "Trebuchet MS", sans-serif; font-size: 0.9rem; color: var(--texto); }
 
 /* ===== Seção de perigo (excluir conta) ===== */
-.card--perigo { border-color: #F3B4B4; }
 .card--perigo .section-title { color: var(--azul-primario); }
 
 /* ===== Autenticação (login / cadastro) ===== */

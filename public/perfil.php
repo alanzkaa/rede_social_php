@@ -95,7 +95,7 @@ $paginaAtual = '';
     <title>BlueSpace · <?= $ehProprioPerfil ? 'Meu perfil' : htmlspecialchars($usuario['nome_completo']) ?></title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="<?= ($usuarioLogado['tema'] ?? 'claro') === 'escuro' ? 'tema-escuro' : '' ?>">
+<body class="<?= ($usuarioLogado['tema'] ?? 'claro') === 'escuro' ? 'tema-escuro ' : '' ?><?= ($usuarioLogado['fundo'] ?? 'imagem') === 'liso' ? 'fundo-liso' : '' ?>">
 
     <?php require __DIR__ . '/../includes/navbar.php'; ?>
 
